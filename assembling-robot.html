@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>ロボットの組み立て - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>ロボットの組み立て</h1>
+<p>教材のロボットハードウェアを組み立て、簡単な動作テストを行います。</p>
+</header>
+
+<section>
+<h2>モータドライバのバスパワー化</h2>
+<article>
+<p>本セミナーの教材として使用するモータドライバは、初期状態ではセルフパワー(USBケーブルの他に、別途電源を供給する必要のある)USBデバイスとして動作します。本セミナーでは、簡易的な使用のため、モータドライバに配線を追加してバスパワーUSBデバイスとして使用します。</p>
+<ol>
+<li>被覆電線を約80mmの長さで切断</li>
+<li>ワイヤストリッパを用い、電線の両端5mmの被覆を剥く</li>
+<li>モータドライバ上の「+5Vin」と「USB5V」の穴に電線を差し込み、半田付け</li>
+<li>半田付けがうまく行えているか確認 (オーガナイザーまたはTAに声をかけてください)</li>
+</ol>
+<div class="important">注意：「CON1」から5Vを供給して利用する場合には、ここで半田付けした電線を切除してください。そのままで「CON1」から5Vを供給すると、モータドライバおよびUSBで接続しているPCが破損する可能性があります。</div>
+</article>
+</section>
+
+<section>
+<h2>ロボットの組み立て</h2>
+<article>
+<ol>
+<li>天板にモータマウントをネジ止め
+<div class="description">
+モータマウント裏側の溝に、M5のナットをはめ込み
+<img src="pic/assembly_mount1.jpg" class="width75" />
+表からM5のネジを軽く留める
+<img src="pic/assembly_mount2.jpg" class="width75" />
+同様にもう一本もネジ留め
+<img src="pic/assembly_mount3.jpg" class="width75" />
+反対側のモータマウントも同様に取り付け
+<img src="pic/assembly_mount4.jpg" class="width100" />
+</div>
+</li>
+<li>モータマウントにモータをネジ止め
+<div class="description">
+モータをモータマウントにはめ込み
+<img src="pic/assembly_motor1.jpg" class="width75" />
+モータマウント側面の穴から、M3のネジ(頭の小さい方)4本でモータを固定
+<img src="pic/assembly_motor2.jpg" class="width75" />
+反対側のモータも同様に取り付け
+<img src="pic/assembly_motor3.jpg" class="width100" />
+</div>
+</li>
+<li>天板に測域センサをネジ止め
+<div class="description">
+天板の表側に、写真の向きにURGを載せ
+<img src="pic/assembly_urg1.jpg" class="width75" />
+裏面からM3のネジ2本で固定
+<img src="pic/assembly_urg2.jpg" class="width75" />
+</div>
+</li>
+<li>天板にキャスターをネジ止め
+<div class="description">
+天板の表側からM4のネジを挿入し
+<img src="pic/assembly_caster1.jpg" class="width75" />
+裏面からM4のナットで固定
+<img src="pic/assembly_caster2.jpg" class="width75" />
+</div>
+</li>
+<li>モータにホイールをイモネジ止め
+<div class="description">
+モータ軸のDカット(平らな面)に、ホイールのイモネジが入っているねじ穴を合わせ、六角レンチでイモネジを締めて固定
+<img src="pic/assembly_wheel.jpg" class="width75" />
+</div>
+</li>
+<li>天板にモータドライバをネジ止め
+<div class="description">
+天板の裏面に、写真の向きでモータドライバを載せ
+<img src="pic/assembly_driver1.jpg" class="width75" />
+表面からM3のネジで固定
+<img src="pic/assembly_driver2.jpg" class="width75" />
+</div>
+</li>
+<li>天板に電池ボックスを貼り付け
+<div class="description">
+天板の裏面に、写真の向きで、両面テープを用いて電池ボックスを固定
+<img src="pic/assembly_battery.jpg" class="width100" />
+貼り合わせ後、よく押しつけて、接着面同士を十分に密着させます。
+<div class="important">接着力を発揮させるため、貼り付け後5分間は、電池ボックスが上側にある状態を維持して下さい。</div>
+</div>
+</li>
+<li>配線
+<div class="description">
+モータ・電池ボックスのケーブルをモータドライバに接続
+<img src="pic/assembly_cable.jpg" class="width100" />
+</div>
+</li>
+</ol>
+<p>以上でロボットの組み立ては完了です。</p>
+<img src="pic/robot.jpg" class="width75" />
+</article>
+</section>
+
+<section>
+<h2>初期設定</h2>
+<article>
+<ol>
+<li>ノートPCをLive USBで起動</li>
+<li>USBデバイスを開けるように、使用しているユーザをdialoutグループに追加
+<div class="source_code">
+<pre>$ sudo adduser ubuntu dialout<div class="enter"></div></pre>
+</div>
+ただし、ユーザ名を変更してインストールしている場合はubuntuの部分をユーザ名で置き換えて下さい。
+</li>
+<li>上記設定を反映するため、画面右上のアイコン<img src="pic/system-icon.png" class="inlineimg"/>から、ログアウトを選択してログアウト</li>
+<li>ログイン画面で、ユーザ名: ubuntu、パスワード: 空欄 でログイン</li>
+</ol>
+</article>
+</section>
+
+<section>
+<h2>制御ソフトのインストールと動作テスト</h2>
+<article>
+<ol>
+<li>画面左のランチャーから「端末」を起動し、下記コマンドを実行して制御ソフトをインストール
+<div class="source_code">
+<pre>$ cd ~/Downloads/<div class="enter"></div>
+$ git clone https://openspur.org/repos/yp-spur.git<div class="enter"></div>
+$ cd yp-spur<div class="enter"></div>
+$ mkdir build<div class="enter"></div>
+$ cd build<div class="enter"></div>
+$ ../configure<div class="enter"></div>
+$ make<div class="enter"></div>
+$ sudo make install<div class="enter"></div>
+$ sudo ldconfig<div class="enter"></div>
+</pre>
+</div>
+ロボットパラメータファイルをダウンロードします。
+(2015年度・2016年度のロボットの場合)
+<div class="source_code">
+<pre>$ mkdir ~/params<div class="enter"></div>
+$ cd ~/params/<div class="enter"></div>
+$ wget https://openspur.org/rsj-seminar99/files/rsj-seminar2016.param<div class="enter"></div></pre>
+</div>
+(2014年度のロボットの場合)
+<div class="source_code">
+<pre>$ mkdir ~/params<div class="enter"></div>
+$ cd ~/params/<div class="enter"></div>
+$ wget https://openspur.org/rsj-seminar99/files/rsj-seminar2014.param<div class="enter"></div></pre>
+</div>
+</li>
+<li>ロボットの電池ボックスに電池を挿入</li>
+<li>電池ボックスのスライドスイッチをON</li>
+<li>モータドライバのUSBをPCに接続</li>
+<li>制御ソフトを起動
+<div class="source_code">
+<pre>$ ypspur-coordinator -p ~/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> -d /dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div>
+</pre>
+</div></li>
+<li>ホイールを持ち上げて走り出さない状態にしてサンプルプログラムを起動 (<a href="linux.html#open-new-terminal">端末をもう1つ開いて</a>実行します。)
+<div class="source_code">
+<pre>$ cd ~/Downloads/yp-spur/build<div class="enter"></div>
+$ ./samples/run-test<div class="enter"></div>
+</pre>
+</div>
+<img src="pic/run-test.png" class="width100" />
+ホイールが回転して、回転方向を何度か変え、最終的に止まることを確認したら、<span class="keybox">Ctrl+c</span>で停止させます。このとき、ypspur-coordinatorは、まだ停止させないで下さい。(停止させた場合はもう一度起動)
+</li>
+<li>床の広い場所でサンプルプログラムを起動
+<div class="source_code">
+<pre>$ ./samples/run-test<div class="enter"></div>
+</pre>
+</div>
+1m x 0.1m の四角形を描いてロボットが移動することを確認します。最後に、サンプルプログラムと、ypspur-coordinatorを<span class="keybox">Ctrl+c</span>で停止させます。</li>
+</ol>
+<li>電池ボックスのスライドスイッチをOFF (待機電力で電池の電力を消費してしまいます)</li>
+
+</article>
+</section>
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>ROS navigationパッケージを使ってみよう - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>ROS navigationパッケージを使ってみよう</h1>
+<p>地図作成と、簡易的に調整済みのnavigationパッケージを利用して、自律ナビゲーションを体験します。</p>
+</header>
+
+<section>
+<h2>ROS navigationパッケージとは</h2>
+<article>
+<p>navigationパッケージは、自己位置推定、大域的な経路計画、局所的な動作計画など、地図ベースの自律走行に必要なノードを含むパッケージ群で、世界中のROS開発者によって作成・管理されています。世界中の英知の塊とも言える、navigationパッケージですが、含まれるソフトウェアの内側ではアドホックな構造やパラメータが多数あり、まともに動く(例えばつくばチャレンジを完走する)ようにチューニングするのは、(これら全てを自分で実装できるくらいの)知識と経験が必要です。</p>
+<p>そこで本セミナーでは、地図作成と、簡易的に調整済みのnavigationパッケージを利用した自律ナビゲーションシステムを動作させます。</p>
+</article>
+</section>
+
+
+<section>
+<h2>必要なパッケージのインストール</h2>
+<article>
+<p>下記コマンドを用いて、地図生成に用いる、slam_gmappingパッケージと、マウスでロボットを操縦するmouse_teleopパッケージをインストールします。navigationパッケージは、サイズが非常に大きいため、LiveUSBに既にインストールしてあります。</p>
+<div class="source_code">
+<pre>$ sudo apt-get install ros-indigo-slam-gmapping ros-indigo-mouse-teleop<div class="enter"></div>
+</pre>
+</div>
+<p>また、セミナー教材用にパラメータを調整してある地図生成や自律ナビゲーションのlaunchファイルが入ったパッケージをダウンロードします。</p>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/src/<div class="enter"></div>
+$ git clone https://github.com/at-wat/rsj_seminar_navigation<div class="enter"></div>
+</pre>
+</div>
+<p>ダウンロードしたrsj_seminar_navigationパッケージを、catkin_makeでビルドします。</p>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/<div class="enter"></div>
+$ catkin_make<div class="enter"></div>
+</pre>
+</div>
+
+
+</article>
+</section>
+
+<section>
+<h2>地図生成</h2>
+<article>
+<p>まず、地図ベースの自律ナビゲーションを実現するために、slam_gmappingパッケージを用いて地図を作成します。PCにロボットとURGのUSBケーブルを接続し、地図を生成したい場所にロボットを置いて、下記のコマンドを実行します。</p>
+<div class="source_code">
+<pre>$ roslaunch rsj_seminar_navigation mapping.launch robot_param:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span><div class="enter"></div>
+</pre>
+</div>
+<p>rvizが起動し、下記のように複数のURGのスキャンデータをつなげて、大きな占有格子地図を生成し始めます。</p>
+<img src="pic/mapping_start.png" class="width100" />
+<p>「Mouse Teleop」のウインドウ内をマウスでドラッグ操作することで、ロボットの動作を制御できますので、地図を作りたい範囲を移動させてみましょう。「Mouse Teleop」のウインドウが隠れている場合は、左の「？」アイコンをクリックすることで最前面に表示できます。</p>
+<p>この地図生成は、URGのスキャンデータを逐次つなげていく仕組みのため、ロボットの位置姿勢を大きく変化させた場合や、センサに見えているものが少ない場合には、地図が破綻する場合があります。その際は、roslaunchを実行した端末で、<span class="keybox">Ctrl+c</span>を押して終了し、もう一度実行し直します。ロボットを走行させていくと、図のように、走行させた範囲の地図が表示されます。</p>
+<img src="pic/mapping.png" class="width100" />
+<p>必要な範囲の地図ができあがったら、端末をもう一つ開き、下記のコマンドで、保存するディレクトリを作成し、地図データをファイルに出力します。</p>
+<div class="source_code">
+<pre>$ mkdir ~/maps<div class="enter"></div>
+$ cd ~/maps/<div class="enter"></div>
+$ rosrun map_server map_saver<div class="enter"></div>
+</pre>
+</div>
+<p>画面左の「ホームホーフォルダー」アイコンから、ホームディレクトリ下の、「maps」ディレクトリを見ると、map.yamlと、map.pgmファイルが生成されていることが確認できます。</p>
+<img src="pic/home-icon.png" class="center" />
+<img src="pic/mapping_saved_dir.png" class="width75" />
+<p>map.yamlをダブルクリックして開くと、地図の解像度や原点の情報が書かれています。また、map.pgmは画像ファイルとして保存されています。</p>
+<img src="pic/mapping_pgm.png" class="width50" />
+<p>地図の画像ファイルが正しく出力できていることを確認したら、roslaunchを実行した端末で、<span class="keybox">Ctrl+c</span>を押して終了します。</p>
+
+</article>
+</section>
+
+<section>
+<h2>ナビゲーション</h2>
+<article>
+<p>先ほど作成した地図を用いて、自律ナビゲーションを試してみましょう。PCにロボットとURGのUSBケーブルを接続し、地図を作成した際の初期位置・姿勢と同じようにロボットを置いて、下記のコマンドを実行します。</p>
+<div class="source_code">
+<pre>$ roslaunch rsj_seminar_navigation navigation.launch robot_param:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span><div class="enter"></div>
+</pre>
+</div>
+<p>rvizが起動し、下記のように先ほど作成した地図が表示されます。この例では、地図と、オレンジ色でプロットされているURGの現在のデータがずれており、自己位置がずれていることがわかります。また、水色のたくさんの矢印は、推定している自己位置の候補を表しています。</p>
+<img src="pic/navi_start.png" class="width75" />
+<p>rvizのウインドウ上中央にある、「2D Pose Estimate」ボタンを押し、ロボットの本来の位置から、ロボットの向いている方向に向かってドラッグすると、緑色の矢印が現れ、自己位置推定ノードに位置姿勢の修正を指示することができます。</p>
+<img src="pic/navi_set_pose.png" class="width75" />
+<p>地図と、URGのデータが概ね一致しました。</p>
+<img src="pic/navi_set_pose_done.png" class="width75" />
+<p>次に、ウインドウ上中央の、「2D Nav Goal」ボタンで、ナビゲーションのゴールを指定します。同様に、与えたいゴールの位置から、目標姿勢の方向に向かってドラッグすると、緑色の矢印が現れ、ナビゲーションのノードに目標位置姿勢の指示を与えることができます。</p>
+<img src="pic/navi_set_goal.png" class="width75" />
+<p>すると、緑色の線でグローバルプランナーが生成したパス、赤色の線でローカルプランナーが生成したパスが表示され、ロボットが走行を開始します。</p>
+<img src="pic/navi_planning.png" class="width75" />
+<p>走行していくと、水色の矢印で表された、自己位置の候補の分布が小さくなり、自己位置推定の確度が高くなったことが確認できます。</p>
+<img src="pic/navi_moving1.png" class="width75" />
+<img src="pic/navi_moving2.png" class="width75" />
+<p>ゴールに到着し、姿勢を目標の方向に向けると、動作が終了します。</p>
+<img src="pic/navi_goal.png" class="width75" />
+
+<p>この状態で、どのようなノードが立ち上がっているのか、確認してみましょう。新しい端末を開き、rqt_graphを実行します。</p>
+<div class="source_code">
+<pre>$ rqt_graph<div class="enter"></div>
+</pre>
+</div>
+<p>左上の、「Nodes only」の部分で、「Nodes/Topics (active)」を選択します。</p>
+<img src="pic/navigation_nodes.png" class="width100" />
+<p>丸枠で書かれた名前は、ノードを表しており、下記の仕事をしています。</p>
+<dl>
+<dt>ypspur_ros</dt><dd>ロボットの制御</dd>
+<dt>urg_node</dt><dd>URGデータの取り込み</dd>
+<dt>map_server</dt><dd>地図ファイルの読み取り</dd>
+<dt>amcl</dt><dd>自己位置推定(モンテカルロローカライゼーション、いわゆる、パーティクルフィルター)</dd>
+<dt>move_base</dt><dd>ナビゲーション(プラグインで、ダイクストラ法のグローバルプランナーと、ダイナミックウインドウアプローチのローカルプランナー、2Dコストマップの処理を実行)</dd>
+<dt>visualizer</dt><dd>データの可視化(rviz)</dd>
+<dt>stp_laser</dt><dd>ロボットの座標原点とURGの座標原点の座標変換の定義</dd>
+</dl>
+<p>四角枠で書かれた名前は、トピックを表しています。</p>
+
+</article>
+</section>
+
+<section>
+<h2>小課題</h2>
+<article>
+<p>rsj_seminar_navigationパッケージのlaunchファイルの中身を開き、どのようなノードが実行されているのか、講義の内容と照らし合わせて確認してみましょう。</p>
+
+
+
+</article>
+</section>
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>

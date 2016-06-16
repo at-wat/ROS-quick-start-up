@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>ROSを用いたURGのデータ取得 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>ROSを用いたURGのデータ取得</h1>
+<p></p>
+</header>
+
+<section>
+<h2>urg_nodeをインストール</h2>
+<article>
+
+<p>下記コマンドで、urg_nodeをインストールします。ROS公式リポジトリに含まれるため、apt-getでインストールが可能です。</p>
+<div class="source_code">
+<pre>$ sudo apt-get install ros-indigo-urg-node<div class="enter"></div></pre>
+</div>
+
+</article>
+</section>
+
+<section>
+<h2>rsj_robot_test_nodeでURGのデータ取得</h2>
+<article>
+
+<p>rsj_robot_test_nodeで、sub_odom(サブスクライバクラス)を定義しているところに、URG用のサブスクライバクラスを追加します。</p>
+
+<div class="source_code">
+<pre>class rsj_robot_test_node
+{
+private:
+<span class="comment">(略)</span>
+	ros::Subscriber sub_odom;
+	<span class="added">ros::Subscriber sub_scan;</span></pre>
+</div>
+
+<p>rsj_robot_test_nodeのコンストラクタに、URG用のサブスクライバ初期化コードを追加します。</p>
+
+<div class="source_code">
+<pre>rsj_robot_test_node()
+{
+<span class="comment">(略)</span>
+
+	ros::NodeHandle nh("~");
+	pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
+			"/ypspur_ros/cmd_vel", 5);
+	sub_odom = nh.subscribe("/ypspur_ros/odom", 5, 
+			&amp;rsj_robot_test_node::cb_odom, this);
+	<span class="added">sub_scan = nh.subscribe("/scan", 5, </span>
+			<span class="added">&amp;rsj_robot_test_node::cb_scan, this);</span>
+}</pre>
+</div>
+
+<p>ソースコードの先頭部分で、スキャンデータのメッセージ型をincludeします。。</p>
+
+<div class="source_code">
+<pre><span class="comment">(略)</span>
+#include &lt;geometry_msgs/Twist.h&gt;
+<span class="added">#include &lt;sensor_msgs/LaserScan.h&gt;</span></pre>
+</div>
+
+<p>更に、rsj_robot_test_nodeクラスに、URG用のコールバック関数を追加します。(cb_odomの前後どちらかの位置)</p>
+
+<div class="source_code">
+<pre>void cb_scan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
+{
+	if(msg->ranges[msg->ranges.size() / 2] &lt; msg-&gt;range_min)
+	{
+		ROS_INFO("front-range: measurement error");
+	}
+	else
+	{
+		ROS_INFO("front-range: %0.3f",
+			msg->ranges[msg->ranges.size() / 2]);
+	}
+}</pre>
+</div>
+<p>このコールバック関数中では、距離データ配列のうち、配列の中央の距離を表示しています。すなわち、URGの場合、正面方向の距離データ(m単位)が表示されます。また、msg-&lt;rangesの値がmsg-&gt;range_minより小さい場合は、測定エラー(遠すぎて測定できない、など)を意味しています。なお、msg-&gt;ranges[0]はmsg-&gt;angle_min方向(rad単位)、msg-&gt;ranges[msg-&gt;size()-1]はmsg-&gt;angle_max方向(rad単位)を表します。</p>
+
+<p>ここでは、ロボットを動かす必要はないので、publishする速度指令の値は0にしておくと良いでしょう。</p>
+
+<h3>ビルド＆実行</h3>
+
+<p>まず、catkin_wsでcatkin_makeを実行して、追加したコードをビルドします。roscore、ypspur_ros、urg_node、rsj_robot_test_nodeを実行したいので、端末を4つ用意して、下記それぞれを実行します。</p>
+<p>URGとロボットのUSBケーブルを接続しておきます。また、ロボットが走り出さないように、タイヤを浮かせておきます。</p>
+
+<div class="source_code">
+<pre>$ roscore<div class="enter"></div></pre>
+</div>
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros _param:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
+</div>
+<div class="source_code">
+<pre>$ rosrun urg_node urg_node _serial_port:=/dev/serial/by-id/usb-Hokuyo_Data_Flex_for_USB_URG-Series_USB_Driver-if00<div class="enter"></div></pre>
+</div>
+<div class="source_code">
+<pre>$ rosrun rsj_robot_test rsj_robot_test_node<div class="enter"></div>
+Hello ROS World!
+vel: 0.0000
+front-range: 1.234
+vel: 0.0000
+front-range: 1.234
+</pre>
+</div>
+<p>URGの正面方向に手などをおいて、距離の値が変わるのを確認して下さい。</p>
+
+
+<h3>小課題</h3>
+<p>URGの真横方向の距離を表示してみましょう。</p>
+
+</article>
+</section>
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>

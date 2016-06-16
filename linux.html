@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Linuxの基本操作 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>Linuxの基本操作</h1>
+<p>基本的なLinuxの操作方法を学習します。</p>
+</header>
+
+<section>
+<h2>端末の操作</h2>
+<article>
+<p>画面左のランチャーにある「端末」アイコンをクリックします。</p>
+<img src="pic/terminal-icon.png" class="center" />
+<p>ウインドウが開き、下記のような文字列が表示されます。</p>
+<div class="source_code">
+<pre>ubuntu@ubuntu:~$ </pre>
+</div>
+<p>これは、「<span class="important">ユーザID</span>@<span class="important">コンピュータ名</span>:<span class="important">現在のディレクトリ</span>$」を表しており、<span class="important">現在のディレクトリ</span>欄の「~」(チルダ)は、現在のユーザのホームディレクトリを表します。</p>
+
+<h3>ディレクトリ操作 (ls, cd コマンド)</h3>
+<p>現在のディレクトリにある、ファイル、ディレクトリは、lsコマンドで表示できます。</p>
+<div class="source_code">
+<pre>ubuntu@ubuntu:~$ ls<div class="enter"></div>
+Desktop  Documents  Downloads  Music  Pictures Public Templates Videos catkin_ws
+ubuntu@ubuntu:~$ </pre>
+</div>
+<p>現在のディレクトリは、cdコマンドで移動できます。以下のように、cdコマンド実行後、<span class="important">現在のディレクトリ</span>欄が変化していることが確認できます。</p>
+<div class="source_code">
+<pre>ubuntu@ubuntu:~$ cd catkin_ws<div class="enter"></div>
+ubuntu@ubuntu:~/catkin_ws$ </pre>
+</div>
+<p>「..」 は、一つ上のディレクトリを意味します。</p>
+<div class="source_code">
+<pre>ubuntu@ubuntu:~/catkin_ws$ cd src/<div class="enter"></div>
+ubuntu@ubuntu:~/catkin_ws/src$ cd ..<div class="enter"></div>
+ubuntu@ubuntu:~/catkin_ws$</pre></div>
+<p>また、cdコマンドをディレクトリを指定せずに実行すると、ホームディレクトリに戻ります。</p>
+<div class="source_code">
+<pre>ubuntu@ubuntu:~/catkin_ws$ cd<div class="enter"></div>
+ubuntu@ubuntu:~$ </pre>
+</div>
+<p>以降、セミナー中で入力するコマンドや実行結果は、ユーザID、コンピュータ名、ディレクトリを省略し、下記のように表記します。</p>
+<div class="source_code">
+<pre>$ ls<div class="enter"></div>
+Desktop  Documents  Downloads  Music  Pictures Public Templates Videos catkin_ws
+$</pre>
+</div>
+
+
+<h3>ディレクトリ作成 (mkdir コマンド)</h3>
+<p>指定した名前のディレクトリを作成します。</p>
+<p>以下の例では、テンポラリディレクトリ(/tmp/)に、test-directoryという名前のディレクトリを作成します。(テンポラリディレクトリは終了時にクリアされて空になります。)</p>
+<div class="source_code">
+<pre>$ cd /tmp/<div class="enter"></div>
+$ ls<div class="enter"></div>
+...
+$ mkdir test-directory<div class="enter"></div>
+$ ls<div class="enter"></div>
+...  test-directory</pre>
+</div>
+
+
+<h3>タブ補完</h3>
+<p>Linuxの端末でコマンドを入力する際、途中まで入力した後に<span class="keybox">Tab</span>キーを押すと、自動的に続きを入力してくれます。<div class="source_code">
+<pre>$ cd ~/c<span class="keybox">Tab</span>
+$ cd catkin_ws/
+</pre>
+</div>
+</p>
+
+
+<h3>実行中のプログラムの停止</h3>
+<p>実行しているコマンドを途中で止めたい場合には、<span class="keybox">Ctrl+c</span>を入力します。下記の例は、yesコマンド(yと表示し続けるコマンド)を実行して、<span class="keybox">Ctrl+c</span>でそれを停止します。</p>
+<div class="source_code">
+<pre>$ yes<div class="enter"></div>
+y
+y
+y
+y
+<span class="keybox">Ctrl+c</span>
+^C
+
+$ 
+</pre>
+</div>
+</p>
+
+
+
+<h3>コピー＆ペースト</h3>
+<p>端末の画面中でのコピー＆ペーストには、キー入力で行う方法と、マウスのみで行う方法があります。キー入力で行う際は、コピーしたい文字列を選択して<span class="keybox">Ctrl+Shift+c</span>でコピー、<span class="keybox">Ctrl+Shift+v</span>でペーストします。</p>
+<div class="source_code">
+<pre>$ cd<div class="enter"></div>
+$ ls<div class="enter"></div>
+<span class="select">Desktop</span> Documents  Downloads  Music  Pictures Public Templates Videos catkin_ws
+<span class="keybox">選択して Ctrl+Shift+c</span>
+$ cd <span class="keybox">Ctrl+Shift+v</span>
+$ cd Desktop
+</pre>
+</div>
+<p>なお、ブラウザなど、端末以外のソフトでは、<span class="keybox">Ctrl+c</span>でコピーができます。</p>
+
+<p>マウスのみでコピー＆ペーストを行う際は、コピーしたい文字列を選択して、そのまま中ボタンをクリックすることで、ペーストします。</p>
+<div class="source_code">
+<pre>$ cd<div class="enter"></div>
+$ ls<div class="enter"></div>
+<span class="select">Desktop</span> Documents  Downloads  Music  Pictures Public Templates Videos catkin_ws
+$ cd <span class="keybox">選択して中クリック</span>
+$ cd Desktop
+</pre>
+</div>
+
+<h3><a id="open-new-terminal">端末を複数開く</a></h3>
+<p>ロボットのプログラムを実行する際、複数の端末ウインドウを使って操作する場合があります。<span class="keybox">Ctrl+Shift+n</span>で新しいウインドウを、<span class="keybox">Ctrl+Shift+t</span>で新しいタブを開くことができます。</p>
+
+
+<h3>コマンドの履歴</h3>
+<p>端末のコマンド入力時に、上キーを押すと、これまでに入力したコマンドを再度呼び出すことができます。</p>
+<div class="source_code">
+<pre>$ <span class="keybox">上下キー</span>
+</pre>
+</div>
+
+</article>
+</section>
+
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>

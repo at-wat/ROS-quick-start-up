@@ -1,0 +1,38 @@
+         VERSION       4.00000000
+       COUNT_REV      1024.00000000 #[Counts/rev]
+            VOLT      12.00000000 #[V]
+           CYCLE       0.0010000 #[s]
+            GEAR      13.733564 #[in/out]
+         MOTOR_R      1.7000000 #[ohm]
+        MOTOR_TC       0.01571 #[Nm/A]
+        MOTOR_VC        608.0 #[rpm/V]
+	MOTOR_PHASE	0.00000000 #DC
+        RADIUS[0]       0.03225000 #[m]
+        RADIUS[1]      -0.03225000 #[m]
+           TREAD       -0.3455 #[m]
+   CONTROL_CYCLE       0.02000000 #[s]
+         MAX_VEL       0.9 #[m/s]
+           MAX_W       3.14 #[rad/s]
+       MAX_ACC_V       1.50000000 #
+       MAX_ACC_W       6.28000000 #
+  MAX_CENTRI_ACC       2.450000000 #[G]
+            L_C1       0.01000000 #
+            L_K1     800.00000000 #
+            L_K2     300.00000000 #
+            L_K3     200.00000000 #
+          L_DIST       0.60000000 #
+
+         GAIN_KP     10.0 # PI control parameter Kp
+         GAIN_KI      4.0 # PI control parameter Ki
+      TORQUE_MAX       0.05 #[Nm]
+      TORQUE_LIMIT     0.4 #[Nm]
+   TORQUE_NEWTON       0.002 #[Nm]
+   TORQUE_VISCOS       0.00001 #[Nm/(count/1ms)]
+    INTEGRAL_MAX       0.1 #[rev]
+
+   TORQUE_OFFSET       0.00000000 #[Nm]
+            MASS       3.000000 #[kg](robot+PC)
+   TORQUE_FINENESS     0.000001
+    MOMENT_INERTIA     0.1
+   MOTOR_M_INERTIA     0
+    TIRE_M_INERTIA     0.0200

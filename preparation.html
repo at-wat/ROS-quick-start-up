@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>開発環境の構築 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>開発環境の構築 (事前準備)</h1>
+<p>セミナー中の開発環境を統一するため、Live USBを用います。PC内蔵のHDD/SSDにはインストールせず、USBドライブからUbuntuを起動します。</p>
+</header>
+
+<section>
+<h2>用意するもの</h2>
+<article>
+<ul>
+<li>Windows、Linux または Mac OS X が使用できる64bit CPU搭載のノート型コンピュータ（以下PC）
+（下記操作は、このPC上で行います。）</li>
+<li>容量4GB以上（8GB推奨）の空のUSBメモリ
+	<ul>
+		<li>PCがUSB3.0対応（コネクタの中心部が青い）の場合は、USB3.0対応USBメモリを推奨</li>
+		<li>PCがUSB2.0対応の場合は、USB2.0対応USBメモリを使用</li>
+	</ul>
+</li>
+</ul>
+</article>
+</section>
+
+<section>
+<h2>更新情報</h2>
+<article>
+<ul>
+<li>2016/6/16 LiveUSBのisoファイルのダウンロードを再開しました。</li>
+<li>2016/6/15 LiveUSBのisoファイルにファイルの不足があったため、ダウンロードを一旦停止しました。6/16に再開予定です。</li>
+</ul>
+</article>
+</section>
+
+<section>
+<h2>注意</h2>
+<article>
+<ul>
+<li>開発環境の構築ではOSの設定を扱うため、操作を誤るとPC上のデータを失う場合があります。<span class="important">事前に重要なデータはバックアップをとり、手順をよく読んで理解してから作業を開始してください。</span></li>
+<li>ロボット学会およびオーガナイザは、これらの操作によるデータの損失について責任を負いかねます。</li>
+<li>うまくいかない場合は、オーガナイザの渡辺&lt;atsushi.w at ieee dot org&gt;までお問い合わせ下さい。</li>
+</ul>
+</article>
+</section>
+
+
+<section>
+<h2>手順</h2>
+<article>
+<ol>
+<li>下記URLから、Ubuntu Linuxのディスクイメージをダウンロードします。（1.2GB）
+<div class="description">
+<!--span class="important">ファイルを準備中です。6/16頃までお待ちください。(6/15追記)</span-->
+<a href="https://openspur.org/rsj-seminar99/files/ubuntu-rsj2016-s99.iso">https://openspur.org/rsj-seminar99/files/ubuntu-rsj2016-s99.iso</a>
+</div>
+</li>
+
+<li>下記URLから、Live USB作成ソフトをダウンロードします。
+<div class="description">
+<p>Windows、Mac OS Xの場合：<a href="https://unetbootin.github.io/">https://unetbootin.github.io/</a></p>
+<p>ページ中の、Live USB作成に使用しているPCのOSを選択してください。</p>
+<img src="pic/unetbootin_download.png" class="width100" />
+<p>Linux (ubuntu)の場合：下記コマンドを実行 $ sudo apt-get install unetbootin</div>
+</li>
+
+<li>事故防止のため、使用しないUSBメモリや、メモリーカードを取り外し、使用するUSBメモリのみを接続します。使用するUSBメモリは、ファイルが入っていない、空の状態にして下さい。</li>
+
+<li>下記の手順でLive USB作成ソフトを起動します。
+<div class="description">
+<p>ダウンロードした unetbootin-windows-???.exe（Windowsの場合）を実行します。</p>
+<p>下記、「WindowsによってPCが保護されました」画面が現れた場合は、「実行」ボタンをクリックしてください。</p>
+<img src="pic/windows_idiot_screen.png" class="width100" />
+<p>また、下記のユーザアカウント制御画面が現れた場合、「はい」をクリックしてください。</p>
+<img src="pic/windows_uac.png" class="width75" />
+</div>
+</li>
+
+<li>下記の手順でLive USBを作成します。
+<div class="description">
+<p>ダウンロードした unetbootin-windows-???.exe（Windowsの場合）を実行します。</p>
+<p>Unetbootinの画面で、「ディスクイメージ」を選択し、「…」ボタンをクリックして先ほどダウンロードした、ubuntu-rsj2016-s99.iso ファイルを選択します。また、「スペースは、リブートしてもファイルを維持するために使用」欄に「4096」と入力し、「ドライブ」欄で、使用するUSBメモリのドライブ名を選択します。内容を確認後、「OK」をクリックしてください。</p>
+<img src="pic/unetbootin_setting.png" class="width75" />
+<p>完了まで、しばらく待機します。（USB2.0の場合、10分以上かかる場合があります。）
+</p>
+<p>下記の「永続性を設定する」画面で、応答なしと表示される場合がありますが、正常に動作していますので、そのまま待機してください。</p>
+<img src="pic/unetbootin_freeze.png" class="width75" />
+<p>下記画面が表示されれば、「Live USB」の作成は完了です。終了をクリックして下さい。</p>
+<img src="pic/unetbootin_end.png" class="width75" />
+</div>
+</li>
+
+<li>Live USBから起動するためのBIOSの設定を行います。<div class="description">
+<p>セミナーで使用するPCの電源を切り、下記の手順で作成したLive USBを接続した状態で起動します。起動時に、BIOS設定画面に入ります。<span class="important">PCのメーカー毎に入り方が異なります</span>ので、マニュアル等で確認してください。図はAcerの例です。</p>
+<img src="pic/acer_boot.png" class="width75" />
+<p>BIOS設定画面に入ったら、起動順（Boot order, Boot priority）の設定で、USBメモリが最優先になるように設定します。
+（表示は使用しているPCおよびUSBメモリのメーカーによって異なります。）</p>
+<img src="pic/acer_boot_order1.png" class="width75" />
+<img src="pic/acer_boot_order2.png" class="width75" />
+<p>設定を保存して再起動します。</p>
+<img src="pic/acer_boot_save.png" class="width75" />
+</div>
+</li>
+
+<li>Live USBからセミナーで使用するUbuntuを起動します。
+<div class="description">
+<p>下記のような選択画面が表示されたら、「Default」または「Try Ubuntu without installing」を選択して、Enterを押してください。<!--span class="important">HDD/SSDを消去してしまう可能性があるので、「Install Ubuntu」は選択しないように注意して下さい。</span--></p>
+<img src="pic/boot_loader.png" class="width75" />
+</div>
+</li>
+
+<li>しばらく待って、下記のような画面が表示されれば、セミナーの準備は完了です。
+<span class="important">HDD/SSDを消去してしまう可能性があるので、ここでは、デスクトップの「Ubuntu 14.04 LTSのインストール」は実行しないように注意して下さい。</span>
+<div class="description">
+<img src="pic/ubuntu.png" class="width100" />
+</div>
+</li>
+
+</ol>
+</article>
+</section>
+
+<section>
+<h2>トラブルシューティング</h2>
+<article>
+<ul>
+<li>「SYSLINUX ?.?? EDD 20??-??-?? Copyright...」のような表示で停止してしまう場合、USB2.0対応PCでUSB3.0対応USBメモリを使用している場合があります。その際は、使用するUSBメモリを変更して3.からやり直してください。</li>
+<li>「This kernel requires an x86-64 CPU...」のような表示で停止してしまう場合、使用しているPCのCPUが32bitです。64bit CPUのPCを使用して下さい。64bit CPUのPCが用意できない場合は、若干数の貸し出しが可能ですので、ご相談下さい。</li>
+</ul>
+うまくいかない場合は、渡辺&lt;atsushi.w at ieee dot org&gt;までお問い合わせ下さい。
+</article>
+</section>
+
+
+<section>
+<h2>上級者向けの設定 <span class="important">PC内蔵のHDD/SSDを消去しても良い場合</span></h2>
+<article>
+<p>PC内蔵のHDD/SSDを消去しても良い場合上には、HDD/SSD にUbuntuをインストールすることでパフォーマンスを向上することができます。「Install Ubuntu 14.04 LTS」をダブルクリックして、画面の指示に従ってインストールを行います。</p>
+<img src="pic/install_icon.png" class="center" />
+<p>Windows等と、Ubuntuを併用可能な形でインストールするオプションがありますが、最近のPCでは、Windows向けのセキュリティ関連機能の影響でこの設定が正しく動作しない場合が多くなっています。（正しく追加の設定を行えば、可能です。）そのため、消去しても良い内蔵HDD/SSDを用いて、「ディスクを削除してUbuntuをインストール」のオプションを使用すると、最も正しく動作する可能性が高くなります。</p>
+</div>
+</li>
+</ol>
+</article>
+</section>
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>

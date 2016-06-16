@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>ROSプログラミングの基本とロボット動作 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>ROSプログラミングの基本とロボット動作</h1>
+<p>基本的なROS上で動くプログラムの書き方とビルド方法を学習します。</p>
+</header>
+
+<section>
+<h2>基本的な用語</h2>
+<article>
+<dl>
+<dt>パッケージ</dt><dd>ノードや設定ファイル、コンパイル方法などをまとめたもの</dd>
+<dt>ノード</dt><dd>ROSの枠組みを使用する、実行ファイル</dd>
+<dt>メッセージ</dt><dd>ノード間でやりとりするデータ</dd>
+<dt>トピック</dt><dd>ノード間でメッセージをやりとりする際に、メッセージを置く場所</dd>
+</dl>
+<p>ノード、メッセージ、トピックの関係は以下の図のようにに表せます。</p>
+<img src="pic/ros-topic.png" class="width75" />
+<p>基本的には、ソフトウェアとしてのROSは、ノード間のデータのやりとりをサポートするための枠組みです。加えて、使い回しがきく汎用的なノードを、世界中のROS利用者で共有するコミュニティも、大きな意味でのROSの一部となっています。</p>
+</article>
+</section>
+
+<section>
+<h2>ソースコードを置く場所</h2>
+<article>
+<p>ROSでは、プログラムをビルドする際に、catkin というシステムを使用しています。また、catkin は、 cmake というシステムを使っており、ROS用のプログラムのパッケージ毎に、cmakeの設定ファイルを作成することで、ビルドに必要な設定を行います。</p>
+<p>セミナー用のLive USBでは、ワークスペースは既に作ってありますので、中身を確認します。</p>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/<div class="enter"></div>
+$ ls<div class="enter"></div>
+build  devel  src
+$ cd src/<div class="enter"></div>
+$ ls<div class="enter"></div>
+CMakeLists.txt
+$ </pre>
+</div>
+<p>catkin_wsディレクトリの中にある、build、develは、catkinシステムがプログラムをビルドする際に使用するものなので、ユーザが触る必要はありません。catkin_ws/srcディレクトリは、ROSパッケージのソースコードを置く場所で、中にあるCMakeLists.txt は、ワークスペース全体をビルドするためのルールが書かれているファイルです。</p>
+<p>このディレクトリに、ypspur-coordinatorをROSに接続するためのパッケージypspur_rosをダウンロードします。</p>
+<div class="source_code">
+<pre>$ git clone https://github.com/at-wat/ypspur_ros<div class="enter"></div>
+$ ls<div class="enter"></div>
+CMakeLists.txt  ypspur_ros
+$ </pre>
+</div>
+<p>gitは、ソースコードなどの変更履歴を記録して管理する、分散型バージョン管理システムと呼ばれるものです。今回のセミナーでは詳細は触れませんが、研究開発を行う上では非常に有用なシステムですので、利用をお勧めします。公式の解説書、<a href="https://git-scm.com/book/ja/v2">Pro Git</a>などを参考にして下さい。</p>
+<p>次にパッケージの構成を確認します。</p>
+<div class="source_code">
+<pre>$ cd ypspur_ros/<div class="enter"></div>
+$ ls<div class="enter"></div>
+CMakeLists.txt  package.xml  msg  src
+$ ls msg/<div class="enter"></div>
+DigitalOutput.msg  JointPositionControl.msg
+$ ls src/<div class="enter"></div>
+getID.sh  joint_tf_publisher.cpp  ypspur_ros.cpp
+$ </pre>
+</div>
+<p>CMakeLists.txtとpackage.xmlには、使っているライブラリの一覧や、生成する実行ファイルとC++のソースコードの対応など、このパッケージをビルドするために必要な情報が書かれています。msgディレクトリには、このパッケージ独自のデータ形式の定義が、srcディレクトリには、このパッケージに含まれるプログラム(ノード)のソースコードが含まれています。</p>
+
+<p>以下のように、catkin_makeコマンドで、ダウンとロードしたypspur_rosパッケージを含む、ワークスペース全体をビルドします。catkin_makeは、ワークスペースの最上位ディレクトリ(~/catkin_ws/)で行います。</p>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/<div class="enter"></div>
+</pre>
+</div>
+</article>
+</section>
+
+<section>
+<h2>ROSノードの理解とビルド・実行</h2>
+<article>
+<p>端末を開き、ひな形をダウンロードします。</p>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/src/<div class="enter"></div>
+$ git clone https://github.com/at-wat/rsj_robot_test.git<div class="enter"></div></pre>
+</div>
+
+<h3>統合開発環境</h3>
+<p>QtCreator (統合開発環境)を使って、rsj_robot_testプロジェクトのソースコードを開きます。まず、画面左のランチャーにある、Qtと書かれたアイコンをクリックします。</p>
+<img src="pic/qtcreator-icon.png" class="center" />
+
+<p>画面上のメニューバー(カーソルを重ねるとメニューが表示される)から、「ファイル」「プロジェクトを開く」を選択します。</p>
+<img src="pic/qtcreator-openproject.png" class="width100" />
+<p>ubuntu/catkin_ws/src/rsj_robot_test内にある、CMakeLists.txtを開きます。</p>
+<img src="pic/qtcreator-openpeoject-cmake.png" class="width75" />
+<p>Configure Projectボタンをクリックします。</p>
+<img src="pic/qtcreator-configure-project.png" class="width75" />
+<p>少し待つと、左側のプロジェクト欄にファイルツリーが表示されます。この中から、srcディレクトリの、rsj_robot_test.cppを開きます。</p>
+<img src="pic/qtcreator-open-sourcecode.png" class="width75" />
+
+
+
+<h3>基本的なコードを読み解く</h3>
+
+<p>このコードが実行されたときの流れを確認しましょう。</p>
+<p>まず、先頭部分では、必要なヘッダファイルをインクルードしています。</p>
+<div class="source_code">
+<pre>#include &lt;ros/ros.h&gt;
+</pre>
+</div>
+<p>続いて、rsj_robot_test_nodeクラスを定義します。ROSプログラミングの際には、基本的にノードの持つ機能を、クラスとして定義し、これを呼び出す形式を取ることが標準的です。(クラスを使用せずに書く事も可能ですが、気をつけなければならない点が多くなるため、本セミナーではクラスでの書き方のみを解説します。)</p>
+<div class="source_code">
+<pre>
+class rsj_robot_test_node
+{
+<span class="comment">(略)</span>
+public:
+<span class="comment">(略)</span>
+	void mainloop()
+	{
+		ROS_INFO("Hello ROS World!");
+
+		ros::Rate rate(10.0);
+		while(ros::ok())
+		{
+			ros::spinOnce();
+			// ここに速度指令の出力コード
+			rate.sleep();
+		}
+		// ここに終了処理のコード
+	}
+};</pre>
+</div>
+<p>rsj_robot_test_nodeクラスのメンバ関数であるmainloop関数の中では、ROSで情報を画面などに出力する際に用いる、ROS_INFO関数を呼び出して、"Hello ROS World!"と表示しています。ほかにも、ROS_DEBUG、ROS_WARN、ROS_ERROR、ROS_FATAL関数が用意されています。</p>
+<p>ros::Rate rate(10.0)で、ROSの便利機能であり、周期実行のためのクラスを初期化しています。初期化時の引数で、実行周波数(この例では10Hz)を指定します。
+</p>
+<p>while(ros::ok())で、メインループを回します。ただし、ros::ok()を条件にすることで、ノードの終了指示が与えられたとき(Ctrl+Cが押された場合も含む)には、ループを抜けて終了処理などが行えるようになっています。</p>
+<p>ループ中では、まず、ros::spinOnce()を呼び出して、ROSのメッセージを受け取るなどの処理を行います。spinOnceは、その時点で届いているメッセージの受け取り処理を済ませた後、すぐに処理を返します。rate.sleep()は、先ほど初期化した実行周波数を維持するようにsleepします。</p>
+<p>なお、ここでは、クラスを定義しただけなので、中身が呼び出されることはありません。後ほど実体化されたときに、初めて中身が実行されます。</p>
+
+<p>続いて、C++のmain関数が定義されています。実行時にはここからスタートします。</p>
+<div class="source_code">
+<pre>
+int main(int argc, char *argv[])
+{
+	ros::init(argc, argv, "rsj_robot_test_node");
+	
+	rsj_robot_test_node robot_test;
+	
+	robot_test.mainloop();
+}</pre>
+</div>
+<p>はじめに、ros::init関数を呼び出して、ROSノードの初期化を行います。1、2番目の引数には、main関数の引数をそのまま渡し、3番目の引数には、このノードの名前(この例では"rsj_robot_test_node")を与えます。</p>
+<p>次に、rsj_robot_test_nodeクラスの実体を作成します。ここでは、robot_testと名前をつけています。</p>
+<p>最後に、実体化したrobot_testのメンバ関数、mainloopを呼び出します。mainloop関数の中は無限ループになっているため、終了するまでの間、ros::spinOnce()、rate.sleep()が呼び出され続けます。</p>
+
+</pre>
+</div>
+<p>つまり、rsj_robot_testは特に仕事をせず、"Hello ROS World!"と画面に表示します。</p>
+
+<h3>ビルド＆実行</h3>
+<p>ROS上でこのパッケージをビルドするためには、catkin_makeコマンドを用います。</p>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/<div class="enter"></div>
+$ catkin_make<div class="enter"></div></pre>
+</div>
+<p>実行してみましょう。実行の際、ROSを通してノード同士がデータをやりとりするために、roscoreを起動しておく必要があります。2つの端末を開き、それぞれで以下を実行して下さい。</p>
+<div class="source_code">
+<pre>$ roscore<div class="enter"></div></pre>
+</div>
+<div class="source_code">
+<pre>$ rosrun rsj_robot_test rsj_robot_test_node<div class="enter"></div>
+[ INFO] [1466002781.136800000]: Hello ROS World!</pre>
+</div>
+<p>以上の手順で、ROSパッケージに含まれるノードのソースコードを編集し、ビルドして、実行できるようになりました。</p>
+
+</article>
+</section>
+
+
+<section>
+<h2>ロボットに速度指令を与える</h2>
+<article>
+<p>先ほどのひな形を編集して、ロボットを動かします。以下の作業は、QtCreator上でソースコードを編集します。</p>
+
+<h3>ロボットに速度指令を与えるコードを追加</h3>
+<p>まず、ロボットに速度指令(目標並進速度・角速度)を与えるコードを追加します。ひな形には既に、速度指令値が入ったメッセージを出力するための初期化コードが含まれていますので、この部分の意味を確認します。</p>
+<div class="source_code">
+<pre>rsj_robot_test_node():
+{
+	ros::NodeHandle nh("~");
+	pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
+			"/ypspur_ros/cmd_vel", 5);
+	sub_odom = nh.subscribe("/ypspur_ros/odom", 5,
+			&amp;rsj_robot_test_node::cb_odom, this);
+}</pre>
+</div>
+<p>ソースコード中の、rsj_robot_test_nodeクラスの、rsj_robot_test_node関数は、クラスのコンストラクタと呼ばれるもので、クラスが初期化されるときに自動的に呼び出されます。この中で、<div class="source_code"><pre>nh.advertise&lt;geometry_msgs::Twist&gt;("/ypspur_ros/cmd_vel", 5);</pre></div>の部分で、このノードが、これからメッセージを出力することを宣言しています。advertise関数に与えている引数は以下のような意味を持ちます。
+<dl>
+<dt>"/ypspur_ros/cmd_vel"</dt><dd>出力するメッセージを置く場所(トピックと呼ぶ)を指定</dd>
+<dt>5</dt><dd>メッセージのバッファリング量を指定 (大きくすると、処理が一時的に重くなったときなどに受け取り側の読み飛ばしを減らせる)</dd>
+</dl>
+<p>advertise関数についている、&lt;geometry_msgs::Twist&gt;の部分は、メッセージの型を指定しています。これは、幾何的・運動学的な値を扱うメッセージを定義しているgeometry_msgsパッケージの、並進・回転速度を表すTwist型です。(この指定方法は、C++のテンプレートという機能を利用していますが、ここでは、「advertiseのときはメッセージの型指定を&lt;&gt;の中に書く、とだけ覚えておけば問題ありません。)</p>
+<p>以下のコードを、mainloop関数の中(「ここに速度指令の出力コード」の部分)に入れることで、速度指令のメッセージを出力(publish)します。</p>
+<div class="source_code">
+<pre>geometry_msgs::Twist cmd_vel;
+cmd_vel.linear.x = 0.05;
+cmd_vel.angular.z = 0.0;
+pub_twist.publish(cmd_vel);</pre>
+</div>
+<p>また、このままでは、rsj_robot_test_nodeが終了したとき、最後の速度指令そのまま残って、走り続けてしまいます。以下のコードを、mainloop関数中のwhileループ後(「ここに終了処理のコード」の部分)に追加しましょう。</p>
+<div class="source_code">
+<pre>geometry_msgs::Twist cmd_vel_stop;
+pub_twist.publish(cmd_vel_stop);
+ros::Duration(0.5).sleep();</pre>
+</div>
+<p>geometry_msgs::Twistの各要素は0で初期化されているため、そのままpublishすることで、走行を停止できます。</p>
+
+<h3>ビルド＆実行</h3>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/<div class="enter"></div>
+$ catkin_make<div class="enter"></div></pre>
+</div>
+<p>この際、ビルドエラーが出ていないか、良く確認して下さい。エラーが出ている場合は、ソースコードの該当箇所を確認・修正して下さい。</p>
+<p>実行の際、まずroscoreと、ypspur_rosを起動します。ypspur_rosの中では、ロボットの動作テストの際に使用した、ypspur-coordinatorが動いています。なお、roscoreは、前のものを実行し続けている場合は、そのままで使用できます。</p>
+<div class="source_code">
+<pre>$ roscore<div class="enter"></div></pre>
+</div>
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros _param:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
+</div>
+<p>続いて、別の端末でrsj_robot_test_nodeノードを実行します。まずは、ロボットのホイールを浮かせて、走り出さない状態にして実行してみましょう。</p>
+<div class="source_code">
+<pre>$ rosrun rsj_robot_test rsj_robot_test_node<div class="enter"></div>
+Hello ROS World!
+</pre>
+</div>
+<p>ゆっくりとホイールが回れば、正しく動作しています。Ctrl+Cで終了します。</p>
+
+<h3>小課題</h3>
+<p>速度、角速度を変更して動作を確認してみましょう。</p>
+
+</article>
+</section>
+
+
+
+<section>
+<h2>ロボットの状態を表示する</h2>
+<article>
+
+<h3>ロボットの状態を表示するコードを追加</h3>
+<p>まず、ロボットの動作したときの移動量やオドメトリ座標を取得、表示するコードを追加します。ひな形には既に、移動量や座標が入ったメッセージを受け取るコードが含まれていますので、この部分の意味を確認します。</p>
+<div class="source_code">
+<pre>rsj_robot_test_node():
+{
+	ros::NodeHandle nh("~");
+	pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
+			"/ypspur_ros/cmd_vel", 5);
+	sub_odom = nh.subscribe("/ypspur_ros/odom", 5,
+			&amp;rsj_robot_test_node::cb_odom, this);
+}</pre>
+</div>
+<p>この中で、
+<div class="source_code"><pre>nh.subscribe("/ypspur_ros/odom", 5, 
+	&amp;rsj_robot_test_node::cb_odom, this);</pre></div>の部分で、このノードが、これからメッセージを受け取ることを宣言しています。subscribe関数に与えている引数は以下のような意味を持ちます。
+<dl>
+<dt>"/ypspur_ros/odom"</dt><dd>受け取るメッセージが置かれている場所(トピック)を指定</dd>
+<dt>5</dt><dd>メッセージのバッファリング量を指定 (大きくすると、処理が一時的に重くなったときなどに読み飛ばしを減らせる)</dd>
+<dt>&amp;rsj_robot_test_node::cb_odom</dt><dd>メッセージを受け取ったときに呼び出す関数を指定 (rsj_robot_test_nodeクラスの中にある、cb_odom関数)</dd>
+<dt>this</dt><dd>メッセージを受け取ったときに呼び出す関数がクラスの中にある場合にクラスの実体を指定 (とりあえず、おまじないと思って構いません。)</dd>
+</dl>
+<p>これにより、rsj_robot_test_nodeノードは、/odomトピックからメッセージをうけとると、cb_odom関数が呼び出されるようになります。続いてcb_odom関数の中身を確認しましょう。</p>
+<div class="source_code">
+<pre>void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
+{
+}</pre>
+</div>
+<p>const nav_msgs::Odometry::ConstPtr は、const型(内容を書き換えられない)、nav_msgsパッケージに含まれる、Odometry型のメッセージの、const型ポインタを表しています。&amp;msgの&amp;は、参照型(内容を書き換えられるように変数を渡すことができる)という意味ですが、(const型なので)ここでは特に気にする必要はありません。</p>
+<p>cb_odom関数に、以下のコードを追加することで、受け取ったメッセージの中から、ロボットの並進速度を取り出して表示できます。</p>
+<div class="source_code">
+<pre>ROS_INFO("vel %f", 
+	msg-&gt;twist.twist.linear.x);</pre>
+</div>
+<p>ここで、msg-&gt;twist.twist.linear.x の意味を確認します。nav_msgs::Odometryメッセージには、下記のように入れ子状にメッセージが入っています。</p>
+<ul>
+<li>std_msgs/Header header</li>
+<li>string child_frame_id</li>
+<li>geometry_msgs/PoseWithCovariance pose</li>
+<li>geometry_msgs/TwistWithCovariance twist</li>
+</ul>
+<p>全て展開すると、以下の構成になります。</p>
+<ul>
+<li>std_msgs/Header header
+	<ul>
+	<li>uint32 seq</li>
+	<li>time stamp</li>
+	<li>string frame_id</li>
+	</ul>
+</li>
+<li>string child_frame_id</li>
+<li>geometry_msgs/PoseWithCovariance pose
+	<ul>
+	<li>geometry_msgs/Pose pose
+		<ul>
+		<li>geometry_msgs/Point position
+			<ul>
+			<li>float64 x</li>
+			<li>float64 y</li>
+			<li>float64 z</li>
+			</ul>
+		</li>
+		<li>geometry_msgs/Quaternion orientation
+			<ul>
+			<li>float64 x</li>
+			<li>float64 y</li>
+			<li>float64 z</li>
+			<li>float64 w</li>
+			</ul>
+		</li>
+		</ul>
+	</li>
+	<li>float64[36] covariance</li>
+	</ul>
+</li>
+<li>geometry_msgs/TwistWithCovariance twist
+	<ul>
+	<li>geometry_msgs/Twist twist
+		<ul>
+		<li>geometry_msgs/Vector3 linear
+			<ul>
+			<li>float64 x <span class="important">ロボット並進速度</span></li>
+			<li>float64 y</li>
+			<li>float64 z</li>
+			</ul>
+		</li>
+		<li>geometry_msgs/Vector3 angular
+			<ul>
+			<li>float64 x</li>
+			<li>float64 y</li>
+			<li>float64 z <span class="important">ロボット角速度</span></li>
+			</ul>
+		</li>
+		</ul>
+	</li>
+	<li>float64[36] covariance</li>
+	</ul>
+</li>
+</ul>
+<p>読みたいデータである、ロボット並進速度を取り出すためには、これを順にたどっていけば良く、msg-&gt;twist.twist.linear.x、となります。msgはクラスへのポインタなので「-&gt;」を用い、以降はクラスのメンバ変数へのアクセスなので「.」を用いてアクセスしています。</p>
+
+<h3>ビルド＆実行</h3>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/<div class="enter"></div>
+$ catkin_make<div class="enter"></div></pre>
+</div>
+<p>この際、ビルドエラーが出ていないか、良く確認して下さい。エラーが出ている場合は、ソースコードの該当箇所を確認・修正して下さい。</p>
+<p>まず、先ほどと同様、roscoreと、ypspur_rosを起動します。(以降、この手順の記載は省略します。)</p>
+<div class="source_code">
+<pre>$ roscore<div class="enter"></div></pre>
+</div>
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros _param:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
+</div>
+<p>続いて、rsj_robot_test_nodeノードを実行します。</p>
+<div class="source_code">
+<pre>$ rosrun rsj_robot_test rsj_robot_test_node<div class="enter"></div>
+Hello ROS World!
+vel: 0.0500
+vel: 0.0500
+vel: 0.0500
+vel: 0.0500
+</pre>
+</div>
+<p>ロボットのホイールが回転し、先ほど追加した走行指令の値と近い値が表示されれば、正しく動作しています。</p>
+
+<h3>小課題</h3>
+<p>同様に、ロボットの角速度を表示してみましょう。</p>
+</article>
+</section>
+
+
+<section>
+<h2>シーケンス制御</h2>
+<article>
+
+<h3>時間で動作を変える</h3>
+<p>メインループを以下のように変更してみましょう。</p>
+<div class="source_code">
+<pre>
+void mainloop()
+{
+	ROS_INFO("Hello ROS World!");
+
+	ros::Rate rate(10.0);
+	ros::Time start = ros::Time::now();
+	while(ros::ok())
+	{
+		ros::spinOnce();
+		ros::Time now = ros::Time::now();
+
+		geometry_msgs::Twist cmd_vel;
+		if(now - start &gt; ros::Duration(3.0))
+		{
+			cmd_vel.linear.x = 0.05;
+			cmd_vel.angular.z = 0.0;
+		}
+		pub_twist.publish(cmd_vel);
+
+		rate.sleep();
+	}
+	geometry_msgs::Twist cmd_vel_stop;
+	pub_twist.publish(cmd_vel_stop);
+	ros::Duration(0.5).sleep();
+}
+</pre>
+</div>
+<p>これは、メインループ開始時刻から、3.0秒後に、並進速度0.05m/sの指令を与えるコードです。ros::Time型(時刻を表す)同士の減算結果は、ros::Duration型(時間を表す)になり、比較演算子で比較できます。したがって、now - start > ros::Duration(3.0)の部分は、開始から3秒後に、trueになります。</p>
+<p>先ほどと同様にビルドし、ypspur_rosとrsj_robot_test_nodeを起動して動作を確認します。</p>
+
+<h3>センシング結果で動作を変える</h3>
+<p>cb_odomで取得したオドメトリのデータを保存しておくように、以下のように変更してみましょう。</p>
+<div class="source_code">
+<pre>void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
+{
+	ROS_INFO("vel %f", 
+		msg-&gt;twist.twist.linear.x);
+	odom = *msg;
+}</pre>
+</div>
+<p>また、class rsj_robot_test_nodeの先頭に下記の変数定義を追加します。</p>
+<div class="source_code">
+<pre>class rsj_robot_test_node
+{
+private:
+	nav_msgs::Odometry odom;
+</pre>
+</div>
+<p>また、odomの中で方位を表す、クオータニオンをコンストラクタ(rsj_robot_test_node()関数)の先頭で初期化しておきます。</p>
+<div class="source_code">
+<pre>rsj_robot_test_node():
+{
+	odom.pose.pose.orientation.w = 1.0;
+</pre>
+</div>
+
+<p>メインループを以下のように変更してみましょう。</p>
+<div class="source_code">
+<pre>
+void mainloop()
+{
+	ROS_INFO("Hello ROS World!");
+
+	ros::Rate rate(10.0);
+	while(ros::ok())
+	{
+		ros::spinOnce();
+
+		geometry_msgs::Twist cmd_vel;
+		if(tf::getYaw(odom.pose.pose.orientation) &gt; 1.57)
+		{
+			cmd_vel.linear.x = 0.0;
+			cmd_vel.angular.z = 0.0;
+		}
+		else
+		{
+			cmd_vel.linear.x = 0.0;
+			cmd_vel.angular.z = 0.1;
+		}
+		pub_twist.publish(cmd_vel);
+
+		rate.sleep();
+	}
+	geometry_msgs::Twist cmd_vel_stop;
+	pub_twist.publish(cmd_vel_stop);
+	ros::Duration(0.5).sleep();
+}
+</pre>
+</div>
+<p>これは、オドメトリのYaw角度(旋回角度)が1.57ラジアン(90度)を超えるまで、正方向に旋回する動作を表しています。</p>
+<p>先ほどと同様にビルドし、ypspur_rosとrsj_robot_test_nodeを起動して動作を確認します。</p>
+
+
+<h3>小課題</h3>
+<p>1m前方に走行し、その後で帰ってくるコードを作成してみましょう。</p>
+<p>余裕があれば、四角形を描いて走行するコードを作成してみましょう。</p>
+
+</article>
+</section>
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>
