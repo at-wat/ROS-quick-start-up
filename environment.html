@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Live USBと同じ環境の構築方法(参考) - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>Live USBと同じ環境の構築方法(参考)</h1>
+<p>セミナー用に配布したLive USBと同等の環境を、Ubuntu 14.04 公式インストーラから作成する手順です。</p>
+</header>
+
+<section>
+<h2>Ubuntuのインストール</h2>
+<article>
+<p><span class="important">[sudo] password for ????: </span>の表示があった際はパスワードを入力</p>
+<p><span class="important">この操作後に ??? kB のディスク容量が解放/消費されます。
+続行しますか? [Y/n] </span>の表示があった際はYを入力</p>
+<ol>
+<li>Ubuntu 14.04 LTSのクリーンインストール</li>
+<li>以下のコマンドを端末中で実行
+<div class="source_code">
+<pre>$ sudo apt-get update<div class="enter"></div>
+$ sudo apt-get upgrade<div class="enter"></div>
+$ sudo apt-get purge modemmanager<div class="enter"></div></pre>
+</div>
+</li>
+<li>Downloads、Documentsなどのフォルダが日本語になっているのを、英語に変更
+<div class="source_code">
+<pre>$ LANG=C xdg-user-dirs-gtk-update<div class="enter"></div></pre>
+</div>
+表示されるダイアログで、「Don't ask me this again」をチェックし、「Update Names」をクリック
+
+</li>
+</ol>
+</article>
+</section>
+
+<section>
+<h2>ROS indigoのセットアップ</h2>
+<article>
+<p>参考: <a href="http://wiki.ros.org/ja/indigo/Installation/Ubuntu">http://wiki.ros.org/ja/indigo/Installation/Ubuntu</a></p>
+<ol>
+<li>以下のコマンドを端末中で実行して、パッケージをインストール
+<div class="source_code">
+<pre>$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu trusty main" > /etc/apt/sources.list.d/ros-latest.list'<div class="enter"></div>
+$ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -<div class="enter"></div>
+$ sudo apt-get update<div class="enter"></div>
+$ sudo apt-get install ros-indigo-desktop<div class="enter"></div></pre>
+</div>
+</li>
+<li>以下のコマンドを端末中で実行して、ROSの初期設定
+<div class="source_code">
+<pre>$ sudo rosdep init<div class="enter"></div>
+$ rosdep update<div class="enter"></div>
+$ echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc<div class="enter"></div>
+$ source ~/.bashrc<div class="enter"></div></pre>
+</div>
+</li>
+<li>セミナー当日のネットワーク回線の都合、事前にros-indigo-navigationをインストール
+<div class="source_code">
+<pre>$ sudo apt-get install ros-indigo-navigation<div class="enter"></div></pre>
+</div>
+</li>
+</ol>
+</article>
+</section>
+
+<section>
+<h2>ROS indigoのワークスペース作成</h2>
+<article>
+<p>参考: <a href="http://wiki.ros.org/ja/ROS/Tutorials/InstallingandConfiguringROSEnvironment">http://wiki.ros.org/ja/ROS/Tutorials/InstallingandConfiguringROSEnvironment</a></p>
+<ol>
+<li>以下のコマンドを端末中で実行
+<div class="source_code">
+<pre>$ mkdir -p ~/catkin_ws/src<div class="enter"></div>
+$ cd ~/catkin_ws/src<div class="enter"></div>
+$ catkin_init_workspace<div class="enter"></div>
+$ cd ~/catkin_ws/<div class="enter"></div>
+$ catkin_make<div class="enter"></div>
+$ echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc<div class="enter"></div>
+$ source ~/.bashrc<div class="enter"></div></pre>
+</div>
+</li>
+</ol>
+</article>
+</section>
+
+<section>
+<h2>統合開発環境QtCreatorのインストール</h2>
+<article>
+<p>セミナーでは、統合開発環境QtCreatorを使用しますが、Ubuntu 14.04で提供されているバージョンには日本語が正しく表示されない問題があるため、修正したバージョンをソースコードからインストールします。</p>
+<ol>
+<li>以下のコマンドを同端末中で実行して、QtCreatorをビルド (環境によっては数十分かかります)
+<div class="source_code">
+<pre>$ cd ~/Downloads/<div class="enter"></div>
+$ git clone http://github.com/at-wat/qt-creator<div class="enter"></div>
+$ mkdir qt-creator-build<div class="enter"></div>
+$ cd qt-creator-build<div class="enter"></div>
+$ export QT_SELECT=4<div class="enter"></div>
+$ qmake ../qt-creator –r<div class="enter"></div>
+$ make -j<div class="enter"></div></pre>
+</div>
+</li>
+<li>以下のコマンドを端末中で実行して、QtCreatorをインストール
+<div class="source_code">
+<pre>$ sudo make install INSTALL_ROOT=/usr<div class="enter"></div></pre>
+</div>
+</li>
+</ol>
+</article>
+</section>
+
+<section>
+<h2>ランチャーへのショートカット追加</h2>
+<article>
+<ol>
+<li>左上のubuntuアイコンをクリックし、「term」と入力し、表示された「端末」を画面左端のランチャーにドラッグ＆ドロップ</li>
+<li>以下のコマンドを端末中で実行して、QtCreatorのショートカットを作成
+<div class="source_code">
+<pre>$ cd ~/.local/share/applications/<div class="enter"></div>
+$ wget https://openspur.org/rsj-seminar99/files/qtcreator-home.desktop<div class="enter"></div>
+$ nautilus .<div class="enter"></div></pre>
+</div>
+</li>
+<li>表示されるqtcreator-home.desktopを、画面左端のランチャーにドラッグ＆ドロップ</li>
+</ol>
+</article>
+</section>
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>
