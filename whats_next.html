@@ -9,12 +9,42 @@
 <body>
 <header>
 <h1>What's next?</h1>
-<p>今回紹介した内容は、ROSを用いたロボットシステム構築のごく一部であり、「ROSを使い始める」という点に充填を置いています。ここでは、本セミナーに引き続いてROSを習得していくために必要なキーワードと概要を説明します。</p>
+<p>今回紹介した内容は、ROSを用いたロボットシステム構築のごく一部であり、「ROSを使い始める」という点に重点を置いています。ここでは、本セミナーに引き続いてROSを習得していくために必要なキーワードと概要を説明します。</p>
 </header>
 
 <section>
 <h2>tf</h2>
 <article>
+<p>ROSでは、tfと呼ばれる、座標変換(transformation)ライブラリが提供されています。tfを用いると、ロボット上に任意の位置姿勢で搭載されているセンサデータの座標を、ロボット座標系や、地図座標系などの任意の座標系に、簡単に座標変換することができます。また、ロボットの座標を、地図座標系で取得するといった処理もサポートされています。</p>
+<p>演習課題Bで紹介したようなロボット位置の取得や、センサデータの座標変換に使用することができます。</p>
+
+</article>
+</section>
+
+<section>
+<h2>パッケージの新規作成・依存パッケージの追加設定</h2>
+<article>
+<p>catkin_create_pkgコマンドを使用して新規にパッケージを作成することができます。また、既存のパッケージ(たとえば、今回のセミナーで使用したrsj_robot_testパッケージ)をディレクトリごとコピーし、CMakeLists.txt、package.xmlを編集して、新規パッケージを作成することも可能です。</p>
+<p>パッケージのディレクトリにある、CMakeLists.txt、package.xmlを編集することで、依存パッケージの設定を追加したり、追加で使用したいライブラリのリンクといったビルド設定を追加できます。特によく変更するのは、以下の項目です。</p>
+<ul>
+<li>CMakeLists.txt
+	<dl>
+	<dt>project(...)</dt><dd>パッケージ名を設定します。</dd>
+	<dt>find_package(catkin REQUIRED COMPONENTS ...)</dt><dd>ROS上でリンクしたいライブラリのリストを追加するとリンクされます。</dd>
+	<dt>find_package</dt><dd>その他のリンクしたい任意のパッケージを、一般的なCMakeの書式で指定できます。</dd>
+	<dt>catkin_package(DEPENDS ...)</dt><dd>ROS上で依存しているパッケージのリストを追加しておくと、そのパッケージに変更があったときに、自パッケージも再ビルドされるようになります。</dd>
+	<dt>add_executable, target_link_libraries</dt><dd>ノードの実行ファイルを定義します。この2行のセットを追加することでノードを追加できます。</dd>
+	</dl>
+</li>
+<li>package.xml
+	<dl>
+	<dt>&lt;name&gt;...&lt;/name&gt;</dt><dd>パッケージ名を設定します。</dd>
+	<dt>&lt;maintainer&gt;...&lt;/maintainer&gt;&lt;author&gt;...&lt;/author&gt;</dt><dd>パッケージの制作者情報を設定します。</dd>
+	<dt>&lt;build_depend&gt;...&lt;/build_depend&gt;&lt;run_depend&gt;...&lt;/run_depend&gt;</dt><dd>ROS上で依存しているパッケージのリストを設定します。CMakeLists.txtの依存パッケージリストと対応付いている必要があります。</dd>
+	</dl>
+</li>
+</ul>
+
 
 </article>
 </section>
