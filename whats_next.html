@@ -45,6 +45,41 @@
 </li>
 </ul>
 
+<section>
+<h2>git</h2>
+<article>
+<p>ソースコードを書く際、以下のような問題や要求がよく発生します。</p>
+<ul>
+<li>コードを変更したら動かなくなった
+	<ul><li>以前の状態に戻したい</li></ul>
+</li>
+<li>複雑なプログラムに多くの変更を加えたい
+	<ul><li>試行錯誤を繰り返し、部分的に元に戻したい</li></ul>
+</li>
+<li>個人用・職場用・ロボット用など複数のコンピュータでプログラムを管理したい
+	<ul><li>ソースコードの同期を取りたい</li></ul>
+</li>
+<li>複数人で一つのコードを編集したい
+	<ul><li>変更履歴を管理したい</li></ul>
+</li>
+</ul>
+<p>これらは、gitなどの分散型バージョン管理システムを正しく用いることで、解決できます。以下のコマンドで、今回のセミナーで使用した、rsj_seminar_navigationの変更の履歴を確認してみましょう。</p>
+<div class="source_code">
+<pre>$ cd ~/catkin_ws/src/rsj_seminar_navigation/<div class="enter"></div>
+$ git log<div class="enter"></div></pre>
+</div>
+<p>いくつかの変更履歴の情報が表示されます。この中で、「enlarges costmap size」が具体的にどのような変更だったのか、確認します。</p>
+<div class="source_code">
+<pre>$ git diff dc4d4f dc4d4f^<div class="enter"></div></pre>
+</div>
+<p>これは、dc4d4fのコミット(git logでcommit dc4d4f... の行に対応)と、その一つ前(^)のコミットの差分を表示するコマンドです。この結果から、costmap_local.yamlファイルのwidth、heightの値が変更されていることが確認できます。</p>
+<p>更に詳しいgitの説明は、公式の解説書、Pro Git (<a href="https://git-scm.com/book/ja/v2">https://git-scm.com/book/ja/v2</a>)などを参考にして下さい。</p>
+
+
+</article>
+</section>
+
+
 
 </article>
 </section>
