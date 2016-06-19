@@ -69,7 +69,7 @@ tf::TransformListener tf_listener;
 double x, y, yaw;
 try
 {
-	tf::Transform trans;
+	tf::StampedTransform trans;
 	tf_listener.waitForTransform("map", "base_link", 
 			ros::Time(0), ros::Duration(0.5));
 	tf_listener.lookupTransform("map", "base_link", 
