@@ -16,7 +16,7 @@
 <h2>ROS navigationパッケージとは</h2>
 <article>
 <p>navigationパッケージは、自己位置推定、大域的な経路計画、局所的な動作計画など、地図ベースの自律走行に必要なノードを含むパッケージ群で、世界中のROS開発者によって作成・管理されています。世界中の英知の塊とも言える、navigationパッケージですが、含まれるソフトウェアの内側ではアドホックな構造やパラメータが多数あり、まともに動く(例えばつくばチャレンジを完走する)ようにチューニングするのは、(これら全てを自分で実装できるくらいの)知識と経験が必要です。</p>
-<p>そこで本セミナーでは、地図作成と、簡易的に調整済みのnavigationパッケージを利用した自律ナビゲーションシステムを動作させます。</p>
+<p>本セミナーでは、地図作成と、自律ナビゲーションを、簡易的に調整済みのlaunchファイルを利用して動作させます。</p>
 </article>
 </section>
 
@@ -24,7 +24,7 @@
 <section>
 <h2>必要なパッケージのインストール</h2>
 <article>
-<p>下記コマンドを用いて、地図生成に用いる、slam_gmappingパッケージと、マウスでロボットを操縦するmouse_teleopパッケージをインストールします。navigationパッケージは、サイズが非常に大きいため、LiveUSBに既にインストールしてあります。</p>
+<p>下記コマンドを用いて、地図生成に用いる、slam_gmappingパッケージと、マウスでロボットを操縦するmouse_teleopパッケージをインストールします。navigationパッケージは、サイズが非常に大きいため、Live USBに既にインストールしてあります。</p>
 <div class="source_code">
 <pre>$ sudo apt-get install ros-indigo-slam-gmapping ros-indigo-mouse-teleop<div class="enter"></div>
 </pre>
@@ -57,7 +57,8 @@ $ catkin_make<div class="enter"></div>
 <p>rvizが起動し、下記のように複数のURGのスキャンデータをつなげて、大きな占有格子地図を生成し始めます。</p>
 <img src="pic/mapping_start.png" class="width100" />
 <p>「Mouse Teleop」のウインドウ内をマウスでドラッグ操作することで、ロボットの動作を制御できますので、地図を作りたい範囲を移動させてみましょう。「Mouse Teleop」のウインドウが隠れている場合は、左の「？」アイコンをクリックすることで最前面に表示できます。</p>
-<p>この地図生成は、URGのスキャンデータを逐次つなげていく仕組みのため、ロボットの位置姿勢を大きく変化させた場合や、センサに見えているものが少ない場合には、地図が破綻する場合があります。その際は、roslaunchを実行した端末で、<span class="keybox">Ctrl+c</span>を押して終了し、もう一度実行し直します。ロボットを走行させていくと、図のように、走行させた範囲の地図が表示されます。</p>
+<p>この地図生成は、URGのスキャンデータを逐次つなげていく仕組みのため、ロボットの位置姿勢を大きく変化させた場合や、センサに見えているものが少ない場合には、地図が破綻する場合があります。その際は、roslaunchを実行した端末で、<span class="keybox">Ctrl+c</span>を押して終了し、もう一度実行し直します。</p>
+<p>ロボットを走行させていくと、図のように、走行させた範囲の地図が表示されます。</p>
 <img src="pic/mapping.png" class="width100" />
 <p>必要な範囲の地図ができあがったら、端末をもう一つ開き、下記のコマンドで、保存するディレクトリを作成し、地図データをファイルに出力します。</p>
 <div class="source_code">
@@ -69,7 +70,7 @@ $ rosrun map_server map_saver<div class="enter"></div>
 <p>画面左の「ホームホーフォルダー」アイコンから、ホームディレクトリ下の、「maps」ディレクトリを見ると、map.yamlと、map.pgmファイルが生成されていることが確認できます。</p>
 <img src="pic/home-icon.png" class="center" />
 <img src="pic/mapping_saved_dir.png" class="width75" />
-<p>map.yamlをダブルクリックして開くと、地図の解像度や原点の情報が書かれています。また、map.pgmは画像ファイルとして保存されています。</p>
+<p>map.yamlをダブルクリックして開くと、地図の解像度や原点の情報が書かれています。また、map.pgmを開くと、地図データが画像ファイルとして保存されていることがわかります。</p>
 <img src="pic/mapping_pgm.png" class="width50" />
 <p>地図の画像ファイルが正しく出力できていることを確認したら、roslaunchを実行した端末で、<span class="keybox">Ctrl+c</span>を押して終了します。</p>
 
@@ -86,11 +87,11 @@ $ rosrun map_server map_saver<div class="enter"></div>
 </div>
 <p>rvizが起動し、下記のように先ほど作成した地図が表示されます。この例では、地図と、オレンジ色でプロットされているURGの現在のデータがずれており、自己位置がずれていることがわかります。また、水色のたくさんの矢印は、推定している自己位置の候補を表しています。</p>
 <img src="pic/navi_start.png" class="width75" />
-<p>rvizのウインドウ上中央にある、「2D Pose Estimate」ボタンを押し、ロボットの本来の位置から、ロボットの向いている方向に向かってドラッグすると、緑色の矢印が現れ、自己位置推定ノードに位置姿勢の修正を指示することができます。</p>
+<p>rvizのウインドウ上中央にある、<span class="important">「2D Pose Estimate」ボタンを押し、ロボットの本来の位置から、ロボットの向いている方向に向かってドラッグ</span>すると、緑色の矢印が現れ、自己位置推定ノードに位置姿勢の修正を指示することができます。</p>
 <img src="pic/navi_set_pose.png" class="width75" />
 <p>地図と、URGのデータが概ね一致しました。</p>
 <img src="pic/navi_set_pose_done.png" class="width75" />
-<p>次に、ウインドウ上中央の、「2D Nav Goal」ボタンで、ナビゲーションのゴールを指定します。同様に、与えたいゴールの位置から、目標姿勢の方向に向かってドラッグすると、緑色の矢印が現れ、ナビゲーションのノードに目標位置姿勢の指示を与えることができます。</p>
+<p>次に、ウインドウ上中央の、<span class="important">「2D Nav Goal」ボタンで、ナビゲーションのゴールを指定</span>します。同様に、<span class="important">与えたいゴールの位置から、目標姿勢の方向に向かってドラッグ</span>すると、緑色の矢印が現れ、ナビゲーションのノードに目標位置姿勢の指示を与えることができます。</p>
 <img src="pic/navi_set_goal.png" class="width75" />
 <p>すると、緑色の線でグローバルプランナーが生成したパス、赤色の線でローカルプランナーが生成したパスが表示され、ロボットが走行を開始します。</p>
 <img src="pic/navi_planning.png" class="width75" />
