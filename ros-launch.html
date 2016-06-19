@@ -16,7 +16,7 @@
 <h2>roslaunch</h2>
 <article>
 <p>URGを使ったロボット制御では、端末を4つ起動して、それぞれroscoreとrosrunコマンドでノードを起動していました。複雑なロボットシステムではこれが、100個以上のノードになる場合もあり、手作業ではやっていられません。</p>
-<p>そこでROSには、launchファイルに、起動するノードやそのパラメータを書いておき、roslaunchコマンドで一括起動する方法が用意されています。QtCreator内で下記の操作を行い、launchファイルを追加してみましょう。</p>
+<p>そこでROSには、launchファイルに、起動するノードやそのパラメータを書いておき、roslaunchコマンドで一括起動する方法が用意されています。下記の操作を行い、launchファイルを追加してみましょう。</p>
 
 <ol>
 <li>rsj_robot_testパッケージに、launchディレクトリを作成
@@ -85,11 +85,12 @@
 <section>
 <h2>rqt_graph</h2>
 <article>
-<p>トピックとノードの接続状態を可視化することができます。ロボットとURGをPCに接続してrobot_test.launchを実行している状態で、下記コマンドを実行してみましょう。</p>
+<p>トピックとノードの接続状態を可視化することができます。ロボットとURGをPCに接続して、roslaunchの項で説明したようにrobot_test.launchを実行し、その状態で下記コマンドを実行してみましょう。</p>
 <div class="source_code">
 <pre>$ rqt_graph<div class="enter"></div></pre>
 </div>
 <p>以下の画像のように、ノードとトピックの接続グラフが表示されます。</p>
+<img src="pic/rqt_graph.png" class="width75" />
 
 </article>
 </section>
@@ -98,7 +99,7 @@
 <section>
 <h2>rostopic</h2>
 <article>
-<p>デバッグなどのため、ROSのトピックに流れているメッセージを確認したいとき、試しにメッセージを送信したいときに、コマンドラインのツールこれらの処理を行うことができます。</p>
+<p>デバッグなどのため、ROSのトピックに流れているメッセージを確認したいときや、試しにメッセージを送信したいときに、コマンドラインのツールでこれらの処理を行うことができます。</p>
 <ul>
 <li>メッセージをsubscribeする
 <div class="source_code">
@@ -127,7 +128,7 @@ angular:
 <section>
 <h2>rviz</h2>
 <article>
-<p>ROSでは、rvizという、データ可視化ツール(ビューワ)が提供されています。今回のセミナーの環境にも、インストールされており、URGのデータやオドメトリを表示することができます。ロボットとURGをPCに接続してrobot_test.launchを実行している状態で、下記コマンドを実行します。</p>
+<p>ROSでは、rvizという、データ可視化ツール(ビューワ)が提供されています。今回のセミナーの環境にも、インストールされており、URGのデータやオドメトリを表示することができます。ロボットとURGをPCに接続して、roslaunchの項で説明したようにrobot_test.launchを実行し、その状態で下記コマンドを実行してみましょう。</p>
 <div class="source_code">
 <pre>$ rosrun rviz rviz<div class="enter"></div></pre>
 </div>

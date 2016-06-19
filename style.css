@@ -317,7 +317,7 @@ hr { color: #999999; padding: 0; height: 1px; }
 	font-size     : 0.9em;
 	line-height   : 18px;
 	margin        : 1px;
-	padding       : 0;
+	padding       : 1px;
 }
 
 .figure{

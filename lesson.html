@@ -9,7 +9,7 @@
 <body>
 <header>
 <h1>演習課題</h1>
-<p>これまでにセミナーで取り扱った内容を試すために、いくつかの演習を用意しています。<span class="important">地図生成やnavigationパッケージを利用した自律ナビゲーションに興味があれば、課題Bから進めても構いません</span>。</p>
+<p>これまでにセミナーで取り扱った内容のおさらいに、いくつかの演習を用意しています。<span class="important">地図生成やnavigationパッケージを利用した自律ナビゲーションに興味があれば、課題Bから進めても構いません</span>。</p>
 </header>
 
 <section>
@@ -21,7 +21,7 @@
 <li>直進し、正面に壁が近づいたら停止する</li>
 <li>壁に沿って走行する 
 	<ul>
-	<li>ヒント：横方向の距離データが一定になるように、角速度にフィードバックする</li>
+	<li>ヒント：横方向の距離データが一定になるように、角速度にフィードバックする。</li>
 	</ul>
 </li>
 </ol>
@@ -31,7 +31,7 @@
 <li>曲がり角を含む壁に沿って走行する</li>
 <li>前を歩いている人について走行する
 	<ul>
-	<li>ヒント：正面方向にある物体の方向に向かうように角速度にフィードバックしつつ、距離を一定に保つように速度にフィードバックする</li>
+	<li>ヒント：正面方向にある物体の方向に向かうように角速度にフィードバックしつつ、距離を一定に保つように速度にフィードバックする。</li>
 	</ul>
 </li>
 </ol>
@@ -47,9 +47,9 @@
 <ol>
 <li>ナビゲーションパッケージを利用して、複数の目的地に順番に移動する
 	<ul>
-	<li>ヒント：/move_base_simple/goalトピックに、geometry_msgsパッケージのPoseStamped型のメッセージで、目標地点の位置姿勢を与えることで、ナビゲーションの指示を与えられる
+	<li>ヒント：/move_base_simple/goalトピックに、geometry_msgsパッケージのPoseStamped型のメッセージで、目標地点の位置姿勢を与えることで、ナビゲーションの指示を与えられる。
 		<ul>
-		<li>ヒントのヒント：PoseStamped型の中で姿勢はクオータニオンで与える、たとえば
+		<li>ヒントのヒント：PoseStamped型の中で姿勢はクオータニオンで与える。以下のコマンドで、Yaw角あらクオータニオンを生成できる。
 <div class="source_code">
 <pre>geometry_msgs::PoseStamped goal_pose;
 goal_pose.pose.orientation = tf::createQuaternionMsgFromYaw(3.14/*[rad]*/);</pre>
@@ -57,7 +57,7 @@ goal_pose.pose.orientation = tf::createQuaternionMsgFromYaw(3.14/*[rad]*/);</pre
 		</li>
 		</ul>
 	</li>
-	<li>ヒント：自己位置推定結果の座標は、tf::TransformListenerを利用する
+	<li>ヒント：自己位置推定結果の座標は、tf::TransformListenerを利用する。
 <div class="source_code">
 <pre>// コードの先頭
 #include &lt;tf/transform_listener.h&gt;

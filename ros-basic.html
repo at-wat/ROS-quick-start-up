@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 <pre>$ cd ~/catkin_ws/<div class="enter"></div>
 $ catkin_make<div class="enter"></div></pre>
 </div>
-<p>実行してみましょう。実行の際、ROSを通してノード同士がデータをやりとりするために、roscoreを起動しておく必要があります。2つの端末を開き、それぞれで以下を実行して下さい。</p>
+<p>実行してみましょう。実行の際、ROSを通してノード同士がデータをやりとりするために用いる、「roscore」を起動しておく必要があります。2つの端末を開き、それぞれで以下を実行して下さい。</p>
 <div class="source_code">
 <pre>$ roscore<div class="enter"></div></pre>
 </div>
@@ -167,7 +167,7 @@ $ catkin_make<div class="enter"></div></pre>
 <pre>$ rosrun rsj_robot_test rsj_robot_test_node<div class="enter"></div>
 [ INFO] [1466002781.136800000]: Hello ROS World!</pre>
 </div>
-<p>以上の手順で、ROSパッケージに含まれるノードのソースコードを編集し、ビルドして、実行できるようになりました。</p>
+<p>「Hello ROS World!」と表示されれば成功です。以上の手順で、ROSパッケージに含まれるノードのソースコードを編集し、ビルドして、実行できるようになりました。</p>
 
 </article>
 </section>
@@ -217,7 +217,7 @@ ros::Duration(0.5).sleep();</pre>
 $ catkin_make<div class="enter"></div></pre>
 </div>
 <p>この際、<span class="important">ビルドエラーが出ていないか、良く確認して下さい</span>。エラーが出ている場合は、ソースコードの該当箇所を確認・修正して下さい。</p>
-<p>実行の際、まずroscoreと、ypspur_rosを起動します。ypspur_rosの中では、ロボットの動作テストの際に使用した、ypspur-coordinatorが動いています。なお、roscoreは、前のものを実行し続けている場合は、そのままで使用できます。</p>
+<p>実行の際、まずroscoreと、ypspur_rosを起動します。ypspur_rosの中では、ロボットの動作テストの際に使用した、ypspur-coordinatorが動いています。なお、roscoreは、前のものを実行し続けている場合は、そのままで使用できます。コマンド入力の際は、タブ補完を活用しましょう。</p>
 <div class="source_code">
 <pre>$ roscore<div class="enter"></div></pre>
 </div>
@@ -272,7 +272,7 @@ Hello ROS World!
 }</pre>
 </div>
 <p>const nav_msgs::Odometry::ConstPtr は、const型(内容を書き換えられない)、nav_msgsパッケージに含まれる、Odometry型のメッセージの、const型ポインタを表しています。&amp;msgの&amp;は、参照型(内容を書き換えられるように変数を渡すことができる)という意味ですが、(const型なので)ここでは特に気にする必要はありません。</p>
-<p>cb_odom関数に、以下のコードを追加することで、受け取ったメッセージの中から、ロボットの並進速度を取り出して表示できます。</p>
+<p>cb_odom関数に、以下のコードを追加してみましょう。これにより、受け取ったメッセージの中から、ロボットの並進速度を取り出して表示できます。</p>
 <div class="source_code">
 <pre>ROS_INFO("vel %f", 
 	msg-&gt;twist.twist.linear.x);</pre>
@@ -367,7 +367,7 @@ vel: 0.0500
 vel: 0.0500
 </pre>
 </div>
-<p>ロボットのホイールが回転し、先ほど追加した走行指令の値と近い値が表示されれば、正しく動作しています。</p>
+<p>ロボットのホイールが回転し、先ほどの小課題で設定した走行指令の値と近い値が表示されれば、正しく動作しています。</p>
 
 <h3>小課題</h3>
 <p>同様に、ロボットの角速度を表示してみましょう。</p>
@@ -414,13 +414,13 @@ void mainloop()
 <p>先ほどと同様にビルドし、ypspur_rosとrsj_robot_test_nodeを起動して動作を確認します。</p>
 
 <h3>センシング結果で動作を変える</h3>
-<p>cb_odomで取得したオドメトリのデータを保存しておくように、以下のように変更してみましょう。</p>
+<p>cb_odomで取得したオドメトリのデータを保存しておくように、以下のように変更してみましょう。(<span class="added">赤線部分</span>を追加)</p>
 <div class="source_code">
 <pre>void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
 {
 	ROS_INFO("vel %f", 
 		msg-&gt;twist.twist.linear.x);
-	odom = *msg;
+	<span class="added">odom = *msg;</span>
 }</pre>
 </div>
 <p>また、class rsj_robot_test_nodeの先頭に下記の変数定義を追加します。</p>
@@ -428,14 +428,16 @@ void mainloop()
 <pre>class rsj_robot_test_node
 {
 private:
-	nav_msgs::Odometry odom;
+	<span class="added">nav_msgs::Odometry odom;</span>
 </pre>
 </div>
-<p>また、odomの中で方位を表す、クオータニオンをコンストラクタ(rsj_robot_test_node()関数)の先頭で初期化しておきます。</p>
+<p>また、odomの中で方位を表す、クオータニオンをコンストラクタ(rsj_robot_test_node()関数)の最後で初期化しておきます。</p>
 <div class="source_code">
 <pre>rsj_robot_test_node():
 {
-	odom.pose.pose.orientation.w = 1.0;
+	<span class="comment">(略)</span>
+	<span class="added">odom.pose.pose.orientation.w = 1.0;</span>
+}
 </pre>
 </div>
 
@@ -477,7 +479,7 @@ void mainloop()
 
 
 <h3>小課題</h3>
-<p>1m前方に走行し、その後で帰ってくるコードを作成してみましょう。</p>
+<p>1m前方に走行し、その後で帰ってくるコードを作成してみましょう。(1m前方に走行し180度旋回して1m前方に走行するか、もしくは、1m前方に走行し1m後方に走行すればよい。)</p>
 <p>余裕があれば、四角形を描いて走行するコードを作成してみましょう。</p>
 
 </article>
