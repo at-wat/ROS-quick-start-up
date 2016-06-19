@@ -160,12 +160,12 @@ $ wget https://openspur.org/rsj-seminar99/files/rsj-seminar2014.param<div class=
 <li>ロボットの電池ボックスに電池を挿入</li>
 <li>電池ボックスの側面にあるスライドスイッチをON</li>
 <li>モータドライバのUSBをPCに接続</li>
-<li>制御ソフトを起動
+<li>端末を開いて、下記コマンドで制御ソフトを起動
 <div class="source_code">
 <pre>$ ypspur-coordinator -p ~/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> -d /dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div>
 </pre>
 </div></li>
-<li>ホイールを持ち上げて走り出さない状態にしてサンプルプログラムを起動 (<a href="linux.html#open-new-terminal">端末をもう1つ開いて</a>実行します。)
+<li>ホイールを持ち上げて走り出さない状態、もしくは、ひっくり返してホイールが浮いている状態にしてサンプルプログラムを起動 (<a href="linux.html#open-new-terminal">端末をもう1つ開いて</a>実行します。)
 <div class="source_code">
 <pre>$ cd ~/Downloads/yp-spur/build<div class="enter"></div>
 $ ./samples/run-test<div class="enter"></div>
