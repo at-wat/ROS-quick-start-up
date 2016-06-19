@@ -291,6 +291,10 @@ hr { color: #999999; padding: 0; height: 1px; }
 	-o-tab-size: 4;
 	-moz-tab-size: 4;
 }
+.source_code file{
+	font-size: 0.8em;
+	border-bottom: 1px dashed #FFFFFF;
+}
 .source_code pre{
 	overflow      : auto;
 	white-space   : pre-wrap;
