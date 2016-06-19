@@ -102,7 +102,7 @@ $ git clone http://github.com/at-wat/qt-creator<div class="enter"></div>
 $ mkdir qt-creator-build<div class="enter"></div>
 $ cd qt-creator-build<div class="enter"></div>
 $ export QT_SELECT=4<div class="enter"></div>
-$ qmake ../qt-creator –r<div class="enter"></div>
+$ qmake –r ../qt-creator<div class="enter"></div>
 $ make -j<div class="enter"></div></pre>
 </div>
 </li>
@@ -111,6 +111,13 @@ $ make -j<div class="enter"></div></pre>
 <pre>$ sudo make install INSTALL_ROOT=/usr<div class="enter"></div></pre>
 </div>
 </li>
+<li>以下のコマンドを端末中で実行して、QtCreatorを起動
+<div class="source_code">
+<pre>$ qtcreator<div class="enter"></div></pre>
+</div>
+</li>
+メニューの「ツール」「オプション」から、「ビルドと実行」を開き、「Default build directory」欄に「../../.qtcreator-build/%{CurrentProject:Name}-%{CurrentKit:FileSystemName}-%{CurrentBuild:Name}」を入力
+<img src="pic/build_dir.png" class="width100" />
 </ol>
 </article>
 </section>
