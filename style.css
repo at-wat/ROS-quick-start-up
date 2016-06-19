@@ -59,6 +59,15 @@ p{
  border: 1px solid #FF0000;
  line-height: 150%;
 }
+div.important{
+ border-radius: 3px;
+ -moz-border-radius: 3px;
+ -webkit-border-radius: 3px;
+ border: 1px solid #FF9999;
+ padding: 0.5em 1em 0.5em 2em;
+ text-indent: -1em;
+ line-height: 130%;
+}
 .important{
  color: #CC0000;
  margin-left: 0.25em;
@@ -102,12 +111,11 @@ p{
  line-height: 110%;
 }
 .comment{
- color: #0000FF;
+ color: #666666;
  font-weight: bold;
- padding-left: 5px;
- padding-right: 5px;
+ padding-left: 1em;
+ padding-right: 1em;
  background-color: #CCCCCC;
- margin-left: 20px;
 }
 .rightinfo{
 	text-align: right;
@@ -161,14 +169,15 @@ ol{
 }
 ul ul, ol ol, ol ul, ul ol{
  border-left: 0;
- margin-top: 0.4em;
- margin-bottom: 0.4em;
+ margin-top: 0.1em;
+ padding-top: 0.1em;
+ margin-bottom: 0.8em;
 }
 ol li{
  padding-bottom: 6px;
 }
-ul li ul li{
- font-size: 90%;
+ul>li>ul>li{
+ font-size: 0.95em;
 }
 dl#robotparam{
  margin-top: 4px;
