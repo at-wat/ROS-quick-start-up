@@ -35,3 +35,8 @@ h4{
 	background-color: #FFFFFF;
 	border: 1px dotted #666666;
 }
+
+a:link,
+a:visited{
+	color: black;
+}
