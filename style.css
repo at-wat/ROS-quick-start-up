@@ -311,7 +311,7 @@ hr { color: #999999; padding: 0; height: 1px; }
 	font-family   :"Monaco","Courier",monospace;
 	font-size     : 0.9em;
 	line-height   : 18px;
-	margin        : 0;
+	margin        : 1px;
 	padding       : 0;
 }
 
