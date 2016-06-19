@@ -3,18 +3,35 @@ body{
 	width: auto;
 }
 .width75{
-	max-width: 50%;
+	max-width: 65%;
 	margin: 0.5em auto;
 	height: auto;
 	display: block;
 }
 
 .width100{
-	max-width: 75%;
+	max-width: 90%;
 	margin: 0.5em auto;
 	height: auto;
 	display: block;
 }
 footer{
 	display: none;
+}
+.source_code{
+	background: #FFFFFF; 
+}
+
+
+h2{
+	background-color: #FFFFFF;
+	border: 1px solid #666666;
+}
+h3{
+	background-color: #FFFFFF;
+	border: 1px dashed #666666;
+}
+h4{
+	background-color: #FFFFFF;
+	border: 1px dotted #666666;
 }
