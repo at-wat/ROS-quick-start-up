@@ -50,13 +50,13 @@ CMakeLists.txt  ypspur_ros
 $ </pre>
 </div>
 <p>gitは、ソースコードなどの変更履歴を記録して管理する、分散型バージョン管理システムと呼ばれるものです。今回のセミナーでは詳細は触れませんが、研究開発を行う上では非常に有用なシステムですので、利用をお勧めします。公式の解説書、Pro Git (<a href="https://git-scm.com/book/ja/v2">https://git-scm.com/book/ja/v2</a>)などを参考にして下さい。</p>
-<p>次にパッケージの構成を確認します。</p>
+<p>次にパッケージのディレクトリ構成を確認します。ダウンロードしているパッケージがバージョンアップされている場合などには、下記の実行例とファイル名が異なったり、ファイルが追加・削除されているが場合があります。</p>
 <div class="source_code">
 <pre>$ cd ypspur_ros/<div class="enter"></div>
 $ ls<div class="enter"></div>
-CMakeLists.txt  package.xml  msg  src
+CMakeLists.txt  msg  package.xml  src
 $ ls msg/<div class="enter"></div>
-DigitalOutput.msg  JointPositionControl.msg
+ControlMode.msg  DigitalOutput.msg  JointPositionControl.msg
 $ ls src/<div class="enter"></div>
 getID.sh  joint_tf_publisher.cpp  ypspur_ros.cpp
 $ </pre>
@@ -133,7 +133,7 @@ public:
 <p>ループ中では、まず、<span class="important">ros::spinOnce()を呼び出して、ROSのメッセージを受け取る</span>といった処理を行います。spinOnceは、その時点で届いているメッセージの受け取り処理を済ませた後、すぐに処理を返します。rate.sleep()は、先ほど初期化した実行周波数を維持するようにsleepします。</p>
 <p>なお、ここでは、クラスを定義しただけなので、中身が呼び出されることはありません。後ほど実体化されたときに、初めて中身が実行されます。</p>
 
-<p>続いて、C++のmain関数が定義されています。実行時にはここからスタートします。</p>
+<p>続いて、C++のmain関数が定義されています。ノードの実行時には、ここから処理がスタートします。</p>
 <div class="source_code">
 <pre>
 int main(int argc, char *argv[])
