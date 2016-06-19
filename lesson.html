@@ -47,8 +47,45 @@
 <ol>
 <li>ナビゲーションパッケージを利用して、複数の目的地に順番に移動する
 	<ul>
-	<li>ヒント：/move_base_simple/goalトピックに、geometry_msgsパッケージのPoseStamped型のメッセージで、目標地点の位置姿勢を与えることで、ナビゲーションの指示を与えられる</li>
-	<li>ヒント：自己位置推定結果の座標は、/amcl_poseトピックからgeometry_msgsパッケージのPoseWithCovarianceStamped型のメッセージでsubscribeできる</li>
+	<li>ヒント：/move_base_simple/goalトピックに、geometry_msgsパッケージのPoseStamped型のメッセージで、目標地点の位置姿勢を与えることで、ナビゲーションの指示を与えられる
+		<ul>
+		<li>ヒントのヒント：PoseStamped型の中で姿勢はクオータニオンで与える、たとえば
+<div class="source_code">
+<pre>geometry_msgs::PoseStamped goal_pose;
+goal_pose.pose.orientation = tf::createQuaternionMsgFromYaw(3.14/*[rad]*/);</pre>
+</div>
+		</li>
+		</ul>
+	</li>
+	<li>ヒント：自己位置推定結果の座標は、tf::TransformListenerを利用する
+<div class="source_code">
+<pre>// コードの先頭
+#include &lt;tf/transform_listener.h&gt;
+
+// rsj_robot_test_nodeクラスのprivate:の後に
+tf::TransformListener tf_listener;
+
+// 座標x, y, yawを取得したい場所で
+double x, y, yaw;
+try
+{
+	tf::Transform trans;
+	tf_listener.waitForTransform("map", "base_link", 
+			ros::Time(0), ros::Duration(0.5));
+	tf_listener.lookupTransform("map", "base_link", 
+			ros::Time(0), trans);
+	x = trans.getOrigin().x();
+	y = trans.getOrigin().y();
+	yaw = tf::getYaw(trans.getRotation());
+}
+catch(tf::TransformException &e)
+{
+	ROS_WARN("%s", e.what());
+}
+</pre>
+</div>
+tfの枠組みを使って、map座標系における、base_link座標系(ロボットの旋回中心からロボット正面を0度とする座標系)原点の位置・向きを取得、すなわち、地図上のロボットの位置姿勢を取得します
+	</li>
 	</ul>
 </li>
 </ol>
