@@ -82,6 +82,14 @@ div.important{
 .comment{
  color: #999999;
 }
+.diff-orig{
+ color: #CC0000;
+ font-weight: bold;
+}
+.diff-new{
+ color: #00CC00;
+ font-weight: bold;
+}
 .select{
  color: #FFFFFF;
  background-color: #000000;
@@ -163,6 +171,10 @@ ul, .contents{
  padding-left: 1.5em;
  padding-top: 0.2em;
  border-left: 2px dotted #999999;
+}
+dd>ul{
+ padding-left: 0.5em;
+ border-left: none;
 }
 ol{
  margin-top: 0.8em;

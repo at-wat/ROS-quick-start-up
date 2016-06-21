@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>正誤表 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>正誤表</h1>
+</header>
+
+<section>
+<article>
+<dl>
+
+<dt>p.22 ロボットに速度指令を与える - ビルド&実行</dt>
+<dd><ul><li>誤: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-orig">_param</span>:=...</pre>
+</div>
+</li><li>
+正: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-new">_param_file</span>:=...</pre>
+</div>
+</li>
+</dd>
+
+<dt>p.24 ロボットの状態を表示する - ビルド&実行</dt>
+<dd><ul><li>誤: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-orig">_param</span>:=...</pre>
+</div>
+</li><li>
+正: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-new">_param_file</span>:=...</pre>
+</div>
+</li>
+</dd>
+
+<dt>p.29 rsj_robot_test_nodeでURGのデータ取得 - ビルド&実行</dt>
+<dd><ul><li>誤: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-orig">_param</span>:=...</pre>
+</div>
+</li><li>
+正: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-new">_param_file</span>:=...</pre>
+</div>
+</li>
+</dd>
+
+<dt>p.30 roslaunch</dt>
+<dd><ul><li>誤: 
+<div class="source_code">
+<pre>	&ltparam name="<span class="diff-orig">param</span>" value= ...</pre>
+</div>
+</li><li>
+正: 
+<div class="source_code">
+<pre>	&ltparam name="<span class="diff-new">param_file</span>" value= ...</pre>
+</div>
+</li>
+</dd>
+
+
+<dt>p.31 roslaunch - paramタグ</dt>
+<dd><ul><li>誤: パラメータ名 (rosrunで、<span class="diff-orig">_param</span>:=としていたparamの部分)
+</li><li>
+正: パラメータ名 (rosrunで、<span class="diff-new">_param_file</span>:=としていたparamの部分)
+</li>
+</dd>
+
+
+</dl>
+</article>
+</section>
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>
