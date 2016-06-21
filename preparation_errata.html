@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Live USBの不具合修正と動作確認 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>Live USBの不具合修正と動作確認</h1>
+<p>UEFIブート対応PCでは、Live USBにデータを保存できない不具合があることがわかりました。下記の手順で、不具合を修正して下さい。なお、2016/6/21 14:00以降にisoファイルをダウンロードした方は、既に不具合が修正されていますので、動作確認のみ行って下さい。</p>
+</header>
+
+<section>
+<h2>grub.cfg の上書き</h2>
+<article>
+<p>Windows、Macなどで、下記URLから、grub.cfgをダウンロードして下さい。(2kB)</p><div class="description">
+<a href="https://openspur.org/rsj-seminar99/files/grub.cfg">https://openspur.org/rsj-seminar99/files/grub.cfg</a>
+</div>
+<p>Live USBをWindows、Macなどで開き、ダウンロードしたgrub.cfgファイルを、boot/grub ディレクトリにある同ファイルに、上書きコピーして下さい。</p>
+<img src="pic/uefi_grub_cfg.png" class="width75" />
+
+</article>
+</section>
+
+<section>
+<h2>動作確認</h2>
+<article>
+<ol>
+<li><a href="preparation.html#BIOS-setting">Live USBから、Ubuntuを起動</a>します。</li>
+
+<li>画面左の「ホームホーフォルダー」アイコンをクリックし、ホームディレクトリを表示します。
+<img src="pic/home-icon.png" class="center" />
+</li>
+<li>ウインドウ中で右クリックし、「新しいドキュメント」「空のドキュメント」を選択します。
+<img src="pic/create_file.png" class="width75" />
+「無題のドキュメント」というファイルが作成されます。
+</li>
+
+<li>Ubuntuを再起動し、再度ホームディレクトリを開いて、「無題のドキュメント」が残っているか確認して下さい。残っていない場合は、上記の不具合修正が正しく行われていない可能性があります。</li>
+
+</article>
+</section>
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>
