@@ -10,7 +10,8 @@
 <header>
 <h1>Live USBと同等の環境構築方法(参考)</h1>
 <p>セミナー用に配布したLive USBと同等の環境を、Ubuntu 14.04 公式インストーラから作成する手順です。</p>
-<div class="important">環境のビルドに、合計500MB程度のダウンロードと1～2時間程度の時間がかかります。</span>
+<div class="important">環境のビルドに、合計500MB以上のダウンロードと1～2時間程度の時間がかかります。</span>
+<p>セミナー用Live USBからインストールした場合には、この作業は必要ありません。</p>
 </header>
 
 <section>
@@ -23,12 +24,18 @@
 <li>Ubuntu 14.04 LTSのクリーンインストール (詳細な説明は省略します)
 <div class="important">ユーザ名を「username」に設定した場合、セミナーテキスト中で /home/ubuntu/... と記載されている部分を /home/username/... に読み替えて下さい。</div>
 </li>
-<li>以下のコマンドを端末中で実行
+<li>以下のコマンドを端末中で実行して、Ubuntuのアップデートを適用
 <div class="source_code">
 <pre>$ sudo apt-get update<div class="enter"></div>
 $ sudo apt-get upgrade<div class="enter"></div>
-$ sudo apt-get purge modemmanager<div class="enter"></div></pre>
 </div>
+</li>
+<li>以下のコマンドを端末中で実行して、ModemManagerを削除
+<div class="source_code">
+<pre>$ sudo apt-get purge modemmanager<div class="enter"></div></pre>
+</div>
+<div class="description">これは、ロボット・センサのUSBが接続されたときに、ModemManagerが起動していると1～2分間ほどモデムとしての通信試行処理が実行され、その間デバイスが利用できない問題があるためです。
+そのため、削除、起動させない、または、USBデバイスをModemManagerのblacklistに追加する、といった処置が必要になります。</div>
 </li>
 <li>Downloads、Documentsなどのフォルダが日本語になっているのを、英語に変更
 <div class="source_code">
