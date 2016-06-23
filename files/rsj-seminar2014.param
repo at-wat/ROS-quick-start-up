@@ -6,15 +6,15 @@
          MOTOR_R      14.75000000 #[ohm]
         MOTOR_TC       1.38730701 #[Nm/A]
         MOTOR_VC     450.0 #[rpm/V]
-	MOTOR_PHASE	0.00000000 #DC
-        RADIUS[0]       -0.04900000 #[m]
-        RADIUS[1]       0.04900000 #[m]
+     MOTOR_PHASE       0.00000000 #DC
+       RADIUS[0]      -0.04900000 #[m]
+       RADIUS[1]       0.04900000 #[m]
            TREAD       0.32 #[m]
    CONTROL_CYCLE       0.02000000 #[s]
          MAX_VEL       0.5 #[m/s]
            MAX_W       1.57 #[rad/s]
-       MAX_ACC_V       1.00000000 #
-       MAX_ACC_W       3.14000000 #
+       MAX_ACC_V       0.80000000 #
+       MAX_ACC_W       1.57000000 #
   MAX_CENTRI_ACC       9.80000000 #[G]
             L_C1       0.01000000 #
             L_K1     800.00000000 #
