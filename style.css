@@ -84,11 +84,18 @@ div.important{
 }
 .diff-orig{
  color: #CC0000;
- font-weight: bold;
 }
 .diff-new{
  color: #00CC00;
- font-weight: bold;
+}
+.source_code.diff-orig{
+	border        : solid 1px #F0D0D0; 
+	background    : #f0e8e8; 
+
+}
+p.diff-orig,
+p.diff-new{
+	line-height: 120%;
 }
 .select{
  color: #FFFFFF;
@@ -252,6 +259,10 @@ dl:after{
  margin-top: 0px;
  margin-bottom: 3px;
  padding-left: 0px;
+}
+li .description{
+ padding-top: 0.5em;
+ padding-bottom: 0.5em;
 }
 .mark{
  margin-left: 8px;

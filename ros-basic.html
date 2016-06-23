@@ -122,7 +122,6 @@ public:
 			// ここに速度指令の出力コード
 			rate.sleep();
 		}
-		// ここに終了処理のコード
 	}
 };</pre>
 </div>
@@ -203,13 +202,13 @@ cmd_vel.linear.x = 0.05;
 cmd_vel.angular.z = 0.0;
 pub_twist.publish(cmd_vel);</pre>
 </div>
-<p>また、このままでは、rsj_robot_test_nodeが終了したとき、最後の速度指令そのまま残って、走り続けてしまいます。以下のコードを、mainloop関数中のwhileループ後(「ここに終了処理のコード」の部分)に追加しましょう。</p>
+<!--p>また、このままでは、rsj_robot_test_nodeが終了したとき、最後の速度指令そのまま残って、走り続けてしまいます。以下のコードを、mainloop関数中のwhileループ後(「ここに終了処理のコード」の部分)に追加しましょう。</p>
 <div class="source_code">
 <pre>geometry_msgs::Twist cmd_vel_stop;
 pub_twist.publish(cmd_vel_stop);
 ros::Duration(0.5).sleep();</pre>
 </div>
-<p>geometry_msgs::Twistの各要素は0で初期化されているため、そのままpublishすることで、走行を停止できます。</p>
+<p>geometry_msgs::Twistの各要素は0で初期化されているため、そのままpublishすることで、走行を停止できます。</p-->
 
 <h3>ビルド＆実行</h3>
 <div class="source_code">

@@ -15,16 +15,42 @@
 <article>
 <dl>
 
-<dt>p.22 ロボットに速度指令を与える - ビルド&実行</dt>
+<dt>p.20 ROSノードの理解とビルド・実行 - 基本的なコードを読み解く</dt>
 <dd><ul><li>誤: 
 <div class="source_code">
-<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-orig">_param</span>:=...</pre>
+<pre>		}
+		<span class="diff-orig">// ここに終了処理のコード</span>
+	}</pre>
 </div>
 </li><li>
-正: 
+正: 該当行を削除
+</li>
+</dd>
+
+<dt>p.22 ROSノードの理解とビルド・実行 - ロボットに速度指令を与える - ビルド&実行</dt>
+<dd><ul><li>誤: 
 <div class="source_code">
-<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-new">_param_file</span>:=...</pre>
+<pre>		}
+		<span class="diff-orig">// ここに終了処理のコード</span>
+	}</pre>
 </div>
+</li><li>
+正: 該当行を削除
+</li>
+</dd>
+
+<dt>p.22 ROSノードの理解とビルド・実行 - ロボットに速度指令を与える - ビルド&実行</dt>
+<dd><ul><li>誤: 
+<p class="diff-orig">また、このままでは、rsj_robot_test_nodeが終了したとき、最後の速度指令そのまま残って、走り続けてしまいます。以下のコードを、mainloop関数中のwhileループ後(「ここに終了処理のコード」の部分)に追加しましょう。</p>
+<div class="source_code diff-orig">
+<pre>geometry_msgs::Twist cmd_vel_stop;
+pub_twist.publish(cmd_vel_stop);
+ros::Duration(0.5).sleep();</pre>
+</div>
+<p class="diff-orig">geometry_msgs::Twistの各要素は0で初期化されているため、そのままpublishすることで、走行を停止できます。</p>
+</li><li>
+正: 該当部分を削除
+<div class="description">解説: ROSノード上では、<span class="keybox">Ctrl+c</span>によってSIGINTシグナルが発行された時点で、publisherなどが破棄されてしまうため、標準的な枠組みの中で、終了時にpublish、subscribe処理を実行する手段を持ちません。</div>
 </li>
 </dd>
 
