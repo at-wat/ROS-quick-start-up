@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>追加資料 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>追加資料</h1>
+</header>
+
+<section>
+<h2>ロボットの止め方</h2>
+<article>
+<p>走行中のロボットの動作を止める方法は複数あります。以下は、上から順に、推奨する方法です。小型で軽いロボットですので、動作がおかしいときは、まず持ち上げて、周辺のものにぶつからないようにしましょう。</p>
+<ol>
+<li>ypspur-coordinator、または、ypspur_ros、または、これらを起動しているroslaunchを<span class="keybox">Ctrl+c</span>で終了する
+<div class="description">制御が正常に終了し、ロボットが停止します。</div></li>
+<li>ロボットを持ち上げ、電池ボックスのスイッチをOFFにする
+<div class="description">モータへの電源が遮断されて停止します。再度スイッチをONにすると、動作を再開します。</div></li>
+<li>USBケーブルを抜く
+<div class="description">モータドライバが異常を検出してブレーキをかけ、停止します。PC側のypspur-coordinatorやypspur_rosも、異常を検出して終了します。</div></li>
+</ol>
+
+</article>
+</section>
+
+
+<section>
+<h2>rvizの画面が表示されない場合</h2>
+<article>
+<p>正常にrvizを起動できると、ウインドウ中央部分は、灰色背景にグリッドが表示されます。これが表示されず、画面が乱れたり、真っ黒になる場合、グラフィックドライバがrvizのOpenGL表示に対応していない可能性があります。この場合、以下のコマンドで、一時的にOpenGLのハードウェアアクセラレーションを無効にしてrvizを起動し、正しく表示されるか確認して下さい。</p>
+<div class="source_code">
+<pre>$ export LIBGL_ALWAYS_SOFTWARE=1<div class="enter"></div>
+$ rosrun rviz rviz<div class="enter"></div></pre>
+</div>
+
+<p>正しく表示された場合は、以下のコマンドで、端末を開いたときに、自動的にハードウェアアクセラレーションの無効化設定を行うように設定します。(次に新たに開いた端末ウインドウから、設定が有効になります。)</p>
+<div class="source_code">
+<pre>$ echo "export LIBGL_ALWAYS_SOFTWARE=1" >> ~/.bashrc<div class="enter"></div></pre>
+</div>
+</article>
+</section>
+
+
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>
