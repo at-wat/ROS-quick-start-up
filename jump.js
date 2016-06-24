@@ -37,7 +37,7 @@ $().ready( function(){
 			$("img, div.source_code").each(function(){
 				if($(this).next().length)
 				{
-					var h = $(this).offset().top + $(this).height() + 1;
+					var h = $(this).offset().top + $(this).outerHeight() + 1;
 					if(h > scroll_h - 100) return false;
 					if(h > top + 64)
 					{
@@ -54,7 +54,7 @@ $().ready( function(){
 				scrollTop: scroll_h
 		    },
 		    {
-				duration : 100
+				duration : 50
 		    });
 	    }
 	});
