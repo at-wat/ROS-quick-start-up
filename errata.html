@@ -13,21 +13,9 @@
 
 <section>
 <article>
-<dl>
+<dl class="errata">
 
 <dt>p.20 ROSノードの理解とビルド・実行 - 基本的なコードを読み解く</dt>
-<dd><ul><li>誤: 
-<div class="source_code">
-<pre>		}
-		<span class="diff-orig">// ここに終了処理のコード</span>
-	}</pre>
-</div>
-</li><li>
-正: 該当行を削除
-</li>
-</dd>
-
-<dt>p.22 ROSノードの理解とビルド・実行 - ロボットに速度指令を与える - ビルド&実行</dt>
 <dd><ul><li>誤: 
 <div class="source_code">
 <pre>		}
@@ -54,7 +42,7 @@ ros::Duration(0.5).sleep();</pre>
 </li>
 </dd>
 
-<dt>p.24 ロボットの状態を表示する - ビルド&実行</dt>
+<dt>p.22 ROSノードの理解とビルド・実行 - ビルド&amp;実行</dt>
 <dd><ul><li>誤: 
 <div class="source_code">
 <pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-orig">_param</span>:=...</pre>
@@ -67,7 +55,47 @@ ros::Duration(0.5).sleep();</pre>
 </li>
 </dd>
 
-<dt>p.29 rsj_robot_test_nodeでURGのデータ取得 - ビルド&実行</dt>
+<dt>p.24 ロボットの状態を表示する - ビルド&amp;実行</dt>
+<dd><ul><li>誤: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-orig">_param</span>:=...</pre>
+</div>
+</li><li>
+正: 
+<div class="source_code">
+<pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-new">_param_file</span>:=...</pre>
+</div>
+</li>
+</dd>
+
+<dt>p.25 シーケンス制御 - 時間で動作を変える</dt>
+<dd><ul><li>誤: 
+<div class="source_code">
+<pre>	}
+	<span class="diff-orig">geometry_msgs::Twist cmd_vel_stop;</span>
+	<span class="diff-orig">pub_twist.publish(cmd_vel_stop);</span>
+	<span class="diff-orig">ros::Duration(0.5).sleep();</span>
+}</pre>
+</div>
+</li><li>
+正: 該当部分を削除
+</li>
+</dd>
+
+<dt>p.26 シーケンス制御 - センシング結果で動作を変える</dt>
+<dd><ul><li>誤: 
+<div class="source_code">
+<pre>	}
+	<span class="diff-orig">geometry_msgs::Twist cmd_vel_stop;</span>
+	<span class="diff-orig">pub_twist.publish(cmd_vel_stop);</span>
+	<span class="diff-orig">ros::Duration(0.5).sleep();</span>
+}</pre>
+</div>
+</li><li>
+正: 該当部分を削除
+</li>
+</dd>
+<dt>p.29 rsj_robot_test_nodeでURGのデータ取得 - ビルド&amp;実行</dt>
 <dd><ul><li>誤: 
 <div class="source_code">
 <pre>$ rosrun ypspur_ros ypspur_ros <span class="diff-orig">_param</span>:=...</pre>

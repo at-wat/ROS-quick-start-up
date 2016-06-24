@@ -2,6 +2,7 @@ body{
  max-width:600pt;
  margin: 0 auto;
  font-family: "KozGoPro-Light", "小塚ゴシック Pro L", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
+ text-align: justify;
 }
 h1{
  margin-bottom: 4px;
@@ -92,6 +93,20 @@ div.important{
 	border        : solid 1px #F0D0D0; 
 	background    : #f0e8e8; 
 
+}
+dl.errata .source_code{
+	margin-top: 0;
+	padding: 0.3em 0.5em;
+	width: 90%;
+	float: right;
+}
+dl.errata ul li:after{
+	content: "";
+	clear: both;
+	display: block;
+}
+dl.errata dt{
+	clear: both;
 }
 p.diff-orig,
 p.diff-new{
