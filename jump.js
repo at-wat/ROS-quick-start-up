@@ -1,5 +1,6 @@
 $().ready( function(){
 	$("footer").append("<div id=\"next\">Next Step</div>");
+	$("footer").append("<div id=\"slidelike\">Slide</div>");
 	$(window).keyup(function(e){
 		if(e.keyCode == 13 || e.keyCode == 39 || e.keyCode == 40 || e.keyCode == 32)
 		{
@@ -7,6 +8,19 @@ $().ready( function(){
 		}
 	});
 	
+	var slide = false;
+	$('#slidelike').click(function (){
+		if(slide == false){
+			$("h2, h3").css("margin-top", "20em");
+			$("body").css("overflow", "hidden");
+			slide = true;
+		}else{
+			$("h2").css("margin-top", "40px");
+			$("h3").css("margin-top", "20px");
+			$("body").css("overflow", "auto");
+			slide = false;
+		}
+	});
 	$('#next').click(function (){
 		var top = $("body, html").scrollTop();
 		var scroll_h = 0;
@@ -21,22 +35,27 @@ $().ready( function(){
 		if(scroll_h > top + $(window).height())
 		{
 			$("img, div.source_code").each(function(){
-			var h = $(this).next().offset().top;
-			if(h > scroll_h - 100) return false;
-			if(h > top + 64)
-			{
-				scroll_h = h;
-				return false;
-			}
-		});
-
+				if($(this).next().length)
+				{
+					var h = $(this).offset().top + $(this).height() + 1;
+					if(h > scroll_h - 100) return false;
+					if(h > top + 64)
+					{
+						scroll_h = h;
+						return false;
+					}
+				}
+			});
 		}
 
-	    $("body, html").stop().animate({
-			scrollTop: scroll_h
-	    },
-	    {
-			duration : 100
-	    });
+		if(scroll_h != 0)
+		{
+		    $("body, html").stop().animate({
+				scrollTop: scroll_h
+		    },
+		    {
+				duration : 100
+		    });
+	    }
 	});
 } );
