@@ -1,6 +1,7 @@
 body{
  max-width:600pt;
  margin: 0 auto;
+ padding: 0 1em;
  font-family: "KozGoPro-Light", "小塚ゴシック Pro L", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
  text-align: justify;
 }
@@ -424,4 +425,30 @@ footer{
 	background-repeat: no-repeat;
 	background-position: bottom left;
 	margin-top: auto;
+}
+
+#next:hover{
+	opacity: 0.85;
+	filter: alpha(opacity = 85);
+}
+#next{
+	width: 24px;
+	height: 22px;
+	font-size: 0.7em;
+	background-color: orange;
+	color: white;
+	position: fixed;
+	bottom: 3em;
+	right: 0;
+	cursor: pointer;
+	line-height: 100%;
+	text-align: center;
+	padding: 5px 3px;
+	zoom:1;
+	filter: alpha(opacity = 5);
+	opacity: 0.5;
+	border-radius: 0.5em 0 0 0.5em;
+	-webkit-border-radius: 0.5em 0 0 0.5em;
+	-moz-border-radius: 0.5em 0 0 0.5em;
+	z-index: 50;
 }
