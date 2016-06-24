@@ -35,7 +35,7 @@ $().ready( function(){
 		if(scroll_h > top + $(window).height())
 		{
 			$("img, div.source_code").each(function(){
-				if($(this).next().length)
+				if($(this).next().length && !$(this).next().is("h2, h3"))
 				{
 					var h = $(this).offset().top + $(this).outerHeight() + 1;
 					if(h > scroll_h - 100) return false;
