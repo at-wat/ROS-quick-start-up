@@ -70,7 +70,9 @@ private:
 <div class="source_code">
 <pre>void cb_scan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
 {
-	if(msg->ranges[msg->ranges.size() / 2] &lt; msg-&gt;range_min)
+	int i = msg->ranges.size() / 2;
+	if(msg->ranges[i] &lt; msg-&gt;range_min ||
+		msg->ranges[i] &gt; msg-&gt;range_max)
 	{
 		ROS_INFO("front-range: measurement error");
 	}
@@ -112,7 +114,13 @@ front-range: 1.234
 
 
 <h3>小課題</h3>
-<p>URGの真横方向の距離を表示してみましょう。</p>
+<p>URGの真横方向の距離を表示してみましょう。
+<ul>
+<li>ヒント: 
+<img src="pic/urg_number_a.png" class="width50" />
+</li>
+</ul>
+</p>
 
 </article>
 </section>
