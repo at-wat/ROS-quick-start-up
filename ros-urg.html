@@ -71,8 +71,9 @@ private:
 <pre>void cb_scan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
 {
 	int i = msg->ranges.size() / 2;
-	if(msg->ranges[i] &lt; msg-&gt;range_min ||
-		msg->ranges[i] &gt; msg-&gt;range_max)
+	if(msg->ranges[i] &lt; msg-&gt;range_min || // エラー値の場合
+		msg->ranges[i] &gt; msg-&gt;range_max || // 測定範囲外の場合
+		std::isnan(msg->ranges[i])) // 無限遠の場合
 	{
 		ROS_INFO("front-range: measurement error");
 	}
