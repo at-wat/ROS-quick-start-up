@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen, print" />
+<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+<script type="text/javascript" src="./jquery.min.js"></script>
+<script type="text/javascript" src="./jump.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>演習課題 回答例 - RSJロボット工学セミナー99 ロボットの作り方</title>
+</head>
+<body>
+<header>
+<h1>演習課題 回答例</h1>
+<p>演習課題の回答例を掲載しています。</p>
+</header>
+
+<section>
+<h2>課題A URGのデータを使ったロボット制御</h2>
+<article>
+
+<h3>A-1 直進し、正面に壁が近づいたら停止する</h3>
+<div class="source_code"><pre>
+#include &lt;ros/ros.h&gt;
+#include &lt;nav_msgs/Odometry.h&gt;
+#include &lt;geometry_msgs/Twist.h&gt;
+#include &lt;sensor_msgs/LaserScan.h&gt;
+
+#include &lt;tf/transform_datatypes.h&gt;
+
+class rsj_robot_test_node
+{
+private:
+    ros::Subscriber sub_odom;
+	ros::Subscriber sub_scan;
+    ros::Publisher pub_twist;
+
+	sensor_msgs::LaserScan latest_scan;
+
+    void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
+    {
+    }
+	void cb_scan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
+	{
+		// 受け取ったメッセージをコピーしておく
+		latest_scan = *msg;
+	}
+public:
+    rsj_robot_test_node()
+    {
+        ros::NodeHandle nh("~");
+        pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
+                    "/ypspur_ros/cmd_vel", 5);
+        sub_odom = nh.subscribe("/ypspur_ros/odom", 5,
+                                &amp;rsj_robot_test_node::cb_odom, this);
+		sub_scan = nh.subscribe("/scan", 5, 
+								&amp;rsj_robot_test_node::cb_scan, this);
+    }
+    void mainloop()
+    {
+        ROS_INFO("Hello ROS World!");
+
+        ros::Rate rate(10.0);
+        while(ros::ok())
+        {
+            ros::spinOnce();
+
+			if(latest_scan.ranges.size() &gt; 0)
+			{
+				// LaserScanメッセージをすでに受け取っている場合a
+
+				geometry_msgs::Twist cmd_vel;
+				int i = (-latest_scan.angle_min) / latest_scan.angle_increment;
+				if(latest_scan.ranges[i] &lt; latest_scan.range_min || // エラー値の場合
+						latest_scan.ranges[i] &gt; latest_scan.range_max || // 測定範囲外の場合
+						std::isnan(latest_scan.ranges[i])) // 無限遠の場合
+				{
+					// 正面に十分な距離がある (測定範囲以上)
+					ROS_INFO("front-range: measurement error");
+					cmd_vel.linear.x = 0.2;
+					cmd_vel.angular.z = 0.0;
+				}
+				else
+				{
+					ROS_INFO("front-range: %0.3f", latest_scan.ranges[i]);
+					if(latest_scan.ranges[i] &gt; 0.5)
+					{
+						// 50cm以上距離がある
+						cmd_vel.linear.x = 0.2;
+						cmd_vel.angular.z = 0.0;
+					}
+					else
+					{
+						// 50cm以下になった
+						cmd_vel.linear.x = 0.0;
+						cmd_vel.angular.z = 0.0;
+					}
+				}
+				pub_twist.publish(cmd_vel);
+			}
+
+            rate.sleep();
+        }
+    }
+};
+
+int main(int argc, char *argv[])
+{
+    ros::init(argc, argv, "rsj_robot_test_node");
+
+    rsj_robot_test_node robot_test;
+
+    robot_test.mainloop();
+}
+</pre></div>
+<p>センサ正面方向の1点のみの距離を取得し、のこりの距離が0.5mより大きい場合は前進、0.5m以下になったら停止します。正面1方向のみでなく、距離を確認する範囲に幅を持たせると、より確実に障害物の手前で止まれるようになります。</p>
+
+<h3>A-2 曲がり角を含む壁に沿って走行する</h3>
+<div class="source_code"><pre>
+#include &lt;ros/ros.h&gt;
+#include &lt;nav_msgs/Odometry.h&gt;
+#include &lt;geometry_msgs/Twist.h&gt;
+#include &lt;sensor_msgs/LaserScan.h&gt;
+
+#include &lt;tf/transform_datatypes.h&gt;
+
+class rsj_robot_test_node
+{
+private:
+    ros::Subscriber sub_odom;
+	ros::Subscriber sub_scan;
+    ros::Publisher pub_twist;
+
+	sensor_msgs::LaserScan latest_scan;
+	float left_prev;
+	geometry_msgs::Twist cmd_vel;
+
+    void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
+    {
+    }
+	void cb_scan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
+	{
+		// 受け取ったメッセージをコピーしておく
+		latest_scan = *msg;
+	}
+public:
+    rsj_robot_test_node()
+    {
+        ros::NodeHandle nh("~");
+        pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
+                    "/ypspur_ros/cmd_vel", 5);
+        sub_odom = nh.subscribe("/ypspur_ros/odom", 5,
+                                &amp;rsj_robot_test_node::cb_odom, this);
+		sub_scan = nh.subscribe("/scan", 5, 
+								&amp;rsj_robot_test_node::cb_scan, this);
+    }
+    void mainloop()
+    {
+        ROS_INFO("Hello ROS World!");
+
+        ros::Rate rate(10.0);
+		left_prev = FLT_MAX;
+        while(ros::ok())
+        {
+            ros::spinOnce();
+
+			if(latest_scan.ranges.size() &gt; 0)
+			{
+				// LaserScanメッセージをすでに受け取っている場合
+
+				float front = FLT_MAX, left = FLT_MAX;
+
+				// theta-range 座標系から x-y 座標系に変換
+				for(unsigned int i = 0; i &lt; latest_scan.ranges.size(); i ++)
+				{
+					if(!(latest_scan.ranges[i] &lt; latest_scan.range_min ||
+							latest_scan.ranges[i] &gt; latest_scan.range_max ||
+							std::isnan(latest_scan.ranges[i])))
+					{
+						// 距離値がエラーでない場合
+
+						float theta = latest_scan.angle_min + i * latest_scan.angle_increment;
+						// x-y 座標系に変換
+						float x = latest_scan.ranges[i] * cosf(theta);
+						float y = latest_scan.ranges[i] * sinf(theta);
+
+						if(fabs(y) &lt; 0.25 &amp;&amp; x &gt; 0.05)
+						{
+							// ロボット正面方向のデータについて最小距離を計算
+							if(front &gt; x) front = x;
+						}
+						else if(fabs(x) &lt; 0.25 &amp;&amp; y &gt; 0.25)
+						{
+							// ロボット左方向のデータについて最小距離を計算
+							if(left &gt; y) left = y;
+						}
+					}
+				}
+
+				if(front &gt; 0.5)
+				{
+					// 正面の距離に余裕がある場合
+
+					ROS_INFO("Following left wall (distance %0.3f)", left);
+					cmd_vel.linear.x = 0.1;
+
+					if(left &gt; 1.0) left = 1.0;
+					// 角速度指令値を0に近づけるようにフィードバック
+					cmd_vel.angular.z += -cmd_vel.angular.z * 0.01;
+					// 左方向の距離を0.5mに近づけるようにフィードバック
+					cmd_vel.angular.z += (left - 0.5) * 0.02;
+					// 距離の変化量(壁の向きを表す)を0に近づけるようにフィードバック
+					if(left_prev &lt; 1.0)
+						cmd_vel.angular.z += (left - left_prev) * 4.0;
+
+					if(cmd_vel.angular.z &gt; 0.3) cmd_vel.angular.z = 0.3;
+					else if(cmd_vel.angular.z &lt; -0.3) cmd_vel.angular.z = -0.3;
+				}
+				else
+				{
+					ROS_INFO("Something in front");
+					cmd_vel.linear.x = 0.0;
+					cmd_vel.angular.z = -0.2;
+				}
+				left_prev = left;
+
+				pub_twist.publish(cmd_vel);
+			}
+
+            rate.sleep();
+        }
+    }
+};
+
+int main(int argc, char *argv[])
+{
+    ros::init(argc, argv, "rsj_robot_test_node");
+
+    rsj_robot_test_node robot_test;
+
+    robot_test.mainloop();
+}
+</pre></div>
+<p>ロボットの左側約0.5mに壁がある状態からスタートすることで動作を確認できます。</p>
+<p>左方向の物体までの距離を測定し、これを0.5mにする(つまり、壁から 0.5mの位置を走る)ように制御します。壁からの距離の誤差、距離の誤差の微分値(壁の向きに対するロボットの向きを表す)、角速度指令値に適当なゲインをかけて、角加速度にフィードバックしています。すなわち、これは、講義1中で説明した、直線追従制御系の簡易的な実装になっています。また、正面がふさがっている場合は、右に旋回することで、常に左の壁に沿って走行を続けます。</p>
+</article>
+</section>
+
+
+<h3>A-3 前を歩いている人について走行する</h3>
+<div class="source_code"><pre>
+#include &lt;ros/ros.h&gt;
+#include &lt;nav_msgs/Odometry.h&gt;
+#include &lt;geometry_msgs/Twist.h&gt;
+#include &lt;sensor_msgs/LaserScan.h&gt;
+
+#include &lt;tf/transform_datatypes.h&gt;
+
+class rsj_robot_test_node
+{
+private:
+    ros::Subscriber sub_odom;
+	ros::Subscriber sub_scan;
+    ros::Publisher pub_twist;
+
+	sensor_msgs::LaserScan latest_scan;
+
+    void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
+    {
+    }
+	void cb_scan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
+	{
+		// 受け取ったメッセージをコピーしておく
+		latest_scan = *msg;
+	}
+public:
+    rsj_robot_test_node()
+    {
+        ros::NodeHandle nh("~");
+        pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
+                    "/ypspur_ros/cmd_vel", 5);
+        sub_odom = nh.subscribe("/ypspur_ros/odom", 5,
+                                &amp;rsj_robot_test_node::cb_odom, this);
+		sub_scan = nh.subscribe("/scan", 5, 
+								&amp;rsj_robot_test_node::cb_scan, this);
+    }
+    void mainloop()
+    {
+        ROS_INFO("Hello ROS World!");
+
+        ros::Rate rate(20.0);
+        while(ros::ok())
+        {
+            ros::spinOnce();
+
+			if(latest_scan.ranges.size() &gt; 0)
+			{
+				// LaserScanメッセージをすでに受け取っている場合
+
+				float hx = 0, hy = 0;
+				int hnum = 0;
+
+				// theta-range 座標系から x-y 座標系に変換
+				for(unsigned int i = 0; i &lt; latest_scan.ranges.size(); i ++)
+				{
+					if(!(latest_scan.ranges[i] &lt; latest_scan.range_min ||
+							latest_scan.ranges[i] &gt; latest_scan.range_max ||
+							std::isnan(latest_scan.ranges[i])))
+					{
+						// 距離値がエラーでない場合
+
+						float theta = latest_scan.angle_min + i * latest_scan.angle_increment;
+						// x-y 座標系に変換
+						float x = latest_scan.ranges[i] * cosf(theta);
+						float y = latest_scan.ranges[i] * sinf(theta);
+
+						if(fabs(y) &lt; 0.5 &amp;&amp; x &gt; 0.05 &amp;&amp; x &lt; 1.05)
+						{
+							// ロボット正面方向、1m四方の領域にある点の重心を計算
+							hx += x;
+							hy += y;
+							hnum ++;
+						}
+					}
+				}
+				geometry_msgs::Twist cmd_vel;
+				if(hnum &gt; 0)
+				{
+					hy /= hnum;
+					hx /= hnum;
+					float dir = atan2(hy, hx);
+					float dist = hypotf(hy, hx);
+
+					ROS_INFO("Following the object in front (dist %0.3f, dir %0.3f)",
+							dist, dir);
+
+					// 角加速度0.6rad/ssで、向きを最短時間制御
+					cmd_vel.angular.z = sqrtf(2.0 * 0.6 * fabs(dir));
+					if(dir &lt; 0) cmd_vel.angular.z *= -1;
+					if(cmd_vel.angular.z &gt; 0.4) cmd_vel.angular.z = 0.4;
+					else if(cmd_vel.angular.z &lt; -0.4) cmd_vel.angular.z = -0.4;
+
+					// 加速度0.3m/ssで、距離を最短時間制御
+					cmd_vel.linear.x = sqrtf(2.0 * 0.3 * fabs(dist - 0.5));
+					if(dist - 0.5 &lt; 0) cmd_vel.linear.x *= -1;
+					if(cmd_vel.linear.x &gt; 0.2) cmd_vel.linear.x = 0.2;
+					else if(cmd_vel.linear.x &lt; -0.2) cmd_vel.linear.x = -0.2;
+				}
+
+				pub_twist.publish(cmd_vel);
+			}
+
+            rate.sleep();
+        }
+    }
+};
+
+int main(int argc, char *argv[])
+{
+    ros::init(argc, argv, "rsj_robot_test_node");
+
+    rsj_robot_test_node robot_test;
+
+    robot_test.mainloop();
+}
+</pre></div>
+<p>広い部屋で、壁から離れた位置で実行し、ロボットの正面に立つことで動作を確認できます。</p>
+<p>ロボットの正面、1m四方にある計測点の重心位置を求め、その方向を向くような回転方向の最短時間制御と、距離を0.5mにするような並進方向の最短時間制御を独立に行っています。こちらも、講義1中で説明した位置制御系の実装例となっています。</p>
+<p>この実装では、正面方向にある点は、すべて追従対象として見てしまうため、壁などの他の物体があると、そちらに吸い寄せられてしまいます。追従する対象をトラッキングするように変更すれば、より多くの環境で動作できるようになります。</p>
+</article>
+</section>
+
+<section>
+<h2>課題B(上級編) navigationパッケージの利用</h2>
+<article>
+
+
+<h3>A-3 ナビゲーションパッケージを利用して、複数の目的地に順番に移動する</h3>
+<div class="source_code"><pre>
+#include &lt;ros/ros.h&gt;
+#include &lt;geometry_msgs/PoseStamped.h&gt;
+
+#include &lt;tf/transform_datatypes.h&gt;
+#include &lt;tf/transform_listener.h&gt;
+
+class rsj_robot_test_node
+{
+private:
+    ros::Publisher pub_goal;
+	tf::TransformListener tfl;
+
+	std::list&lt;geometry_msgs::PoseStamped&gt; goals;
+	geometry_msgs::PoseStamped current_goal;
+
+public:
+    rsj_robot_test_node()
+    {
+        ros::NodeHandle nh("~");
+        pub_goal = nh.advertise&lt;geometry_msgs::PoseStamped&gt;(
+                    "/move_base_simple/goal", 5, true);
+    }
+	void add_goal(const float x, const float y, const float yaw)
+	{
+		geometry_msgs::PoseStamped goal;
+		goal.header.frame_id = "map";
+		goal.pose.position.x = x;
+		goal.pose.position.y = y;
+		goal.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
+		goals.push_back(goal);
+	}
+	bool pop_goal()
+	{
+		if(goals.size() == 0) return false;
+
+		current_goal = goals.front();
+		goals.pop_front();
+		ROS_INFO("Applying goal %0.3f %0.3f %0.3f",
+				current_goal.pose.position.x,
+				current_goal.pose.position.y,
+				tf::getYaw(current_goal.pose.orientation));
+		pub_goal.publish(current_goal);
+
+		return true;
+	}
+    void mainloop()
+	{
+		ROS_INFO("Hello ROS World!");
+
+		if(!pop_goal())
+		{
+			ROS_ERROR("No goal specified");
+			return;
+		}
+
+		ros::Rate rate(10.0);
+		while(ros::ok())
+		{
+			rate.sleep();
+			ros::spinOnce();
+
+			float x, y, yaw;
+			try
+			{
+				tf::StampedTransform trans;
+				tfl.waitForTransform("map", "base_link", 
+						ros::Time(0), ros::Duration(0.5));
+				tfl.lookupTransform("map", "base_link", 
+						ros::Time(0), trans);
+				x = trans.getOrigin().x();
+				y = trans.getOrigin().y();
+				yaw = tf::getYaw(trans.getRotation());
+			}
+			catch(tf::TransformException &amp;e)
+			{
+				ROS_WARN("%s", e.what());
+				continue;
+			}
+
+			float yaw_goal = tf::getYaw(current_goal.pose.orientation);
+			float yaw_error = yaw - yaw_goal;
+			if(yaw &gt; M_PI) yaw -= 2.0 * M_PI;
+			else if(yaw &lt; -M_PI) yaw += 2.0 * M_PI;
+
+			if(hypotf(x - current_goal.pose.position.x,
+						y - current_goal.pose.position.y) &lt; 0.15 &amp;&amp;
+					fabs(yaw_error) &lt; 0.3)
+			{
+				if(!pop_goal())
+				{
+					ROS_INFO("Finished");
+					return;
+				}
+				ROS_INFO("Next goal applied");
+			}
+		}
+	}
+};
+
+int main(int argc, char *argv[])
+{
+    ros::init(argc, argv, "rsj_robot_test_node");
+
+    rsj_robot_test_node robot_test;
+
+	// 行き先を追加
+	robot_test.add_goal(0.3, -0.3, 0.0);
+	robot_test.add_goal(0.2, 0.2, 1.57);
+
+    robot_test.mainloop();
+}
+</pre></div>
+<p>地図を作ってある環境で、「ROS navigationパッケージを使ってみよう」の章で行ったように、rsj_seminar_navigationパッケージのnavigation.launchを実行している状態で、上記プログラムを動かすと、main関数中で追加した位置・姿勢(x[m],  y[m], yaw[rad])を順に訪れる動作を確認できます。</p>
+<p>この実装では、障害物などがあってスタックしたような状態はチェックしていません。たとえば、タイムアウト処理を入れて、どうしてもたどり着けない場合は、あきらめて次に進む、などの処理を入れるとよいかもしれません。</p>
+<p>また、スタックした場合の処理などは、actionlibというROS用のライブラリを使用するとうまく実装できます。<a href="http://wiki.ros.org/ja/actionlib">http://wiki.ros.org/ja/actionlib</a></p>
+
+</article>
+</section>
+
+<footer>
+<a href="./">戻る</a>
+<div class="rightinfo">問い合わせ先：渡辺敦志(東北大学) &lt;atsushi.w at ieee dot org&gt;</div>
+</footer>
+</body>
+</html>
