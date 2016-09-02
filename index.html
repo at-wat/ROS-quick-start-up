@@ -9,11 +9,6 @@
 <body>
 <header>
 <h1>RSJロボット工学セミナー99 ロボットの作り方<div class="subtitle">～移動ロボットの制御とROSによる動作計画実習～</div></h1>
-<div class="rightinfo">
-オーガナイザ：渡辺敦志(東北大学)、嶋地直広(北陽電機(株))
-</div>
-<div class="rightinfo">
-</div>
 </header>
 
 <section>
@@ -30,69 +25,60 @@
 </section>
 
 <section>
-<h2>当日の持ち物</h2>
+<h2>セミナーに必要な物品の準備</h2>
 <article>
-<p>下記4点を<span class="important">必ず</span>持参してください。</p>
+<p>下記をご用意下さい。</p>
 <ol>
-<li>実習に使用するノートPC (64bit必須、64bitのPCが用意できない場合は若干数の貸し出しが可能ですのでお問い合わせ下さい)</li>
+<li>教材ロボット (現在、販売の準備中です)</li>
+<li>実習に使用するノートPC (64bit必須)</li>
 <li>下記、事前準備で作成した Live USB</li>
+<li>ネットワーク環境</li>
 <li>USB A-miniBケーブル (長さ50cm程度) 2本</li>
-<li>単三乾電池 8本(充電池も可)
-<div class="description">たくさん動かすと2日間持たない場合がありますので、予備の電池を追加で8本程度ご用意頂くと安心です。なお、会場付近に電気店がありますので、当日そちらで購入することも可能です。</div>
-</li>
+<li>単三乾電池 8本(充電池も可)</li>
 </ol>
 <p>本セミナーの実習では、USBポートに「Live USB」、「モータドライバ」、「測域センサ」を接続します。<span class="important">USBポートが3個より少ない場合は</span>、USBハブを用意してください。</p>
 <ol>
 <li>USBハブ (合計の利用可能USBポートを3個以上にすること)</li>
 </ol>
-<p>下記3点は、<span class="important">可能であれば</span>持参してください。(用意できない場合は貸し出します。)</p>
+<p>教材ロボットの組み立てには、以下の工具が必要です。</p>
 <ol>
 <li>プラスドライバ (M3～M5のネジを締められるもの)</li>
 <li>六角レンチセット</li>
-<li>モバイルルーターなどのインターネット接続機器 (会場でもWiMAX回線を用意しますが、速度が遅くなる可能性があるため、可能であれば持参をお願いします。)</li>
 </ol>
-<p>不明な点や、事前準備がうまく行かない点については、オーガナイザの渡辺&lt;atsushi.w at ieee dot org&gt;までお問い合わせ下さい。</p>
-
 </article>
 </section>
 <section>
-<h2>事前準備 <span class="important">(お早めに準備と動作確認をお願いします！)</span></h2>
+<h2>事前準備</h2>
 <article>
 <ul>
 <li><a href="preparation.html">開発環境の構築</a></li>
-<li><a href="preparation_errata.html">Live USBの不具合修正と動作確認</a></li>
 </ul>
 </article>
 </section>
 
 <section>
-<h2>スケジュール</h2>
+<h2>セミナーテキスト</h2>
 <article>
-<h3>1日目 (6/25)</h3>
 <ul>
-<li>(10:10-10:30) <a href="linux.html">Linuxの基本操作</a></li>
-<li>(10:30-12:00) <a href="assembling-robot.html">ロボットの組み立て</a></li>
-<li>(12:00-13:00) 昼休み</li>
-<li>(13:00-13:30) ロボットの組み立て つづき</li>
-<li>(13:30-14:30) 講義1「モータ制御・ロボット動作制御の理論」 <div class="indent">講師: 渡辺敦志(東北大 助教)</div></li>
-<li>(14:30-17:00) <a href="ros-basic.html">ROSプログラミングの基本とロボット動作</a></li>
+<li><a href="linux.html">Linuxの基本操作</a></li>
+<li><a href="assembling-robot.html">ロボットの組み立て</a></li>
+<li>講義1「モータ制御・ロボット動作制御の理論」 <div class="indent">講師: 渡辺敦志(東北大 助教)</div></li>
+<li><a href="ros-basic.html">ROSプログラミングの基本とロボット動作</a></li>
+<li><a href="ros-urg.html">ROSを用いたURGのデータ取得</a></li>
+<li><a href="ros-launch.html">ROSの便利機能</a></li>
+<li>講義2「ROSを用いた自律移動ロボットのシステム構築」 <div class="indent">講師: 原祥尭(千葉工大 fuRo 主任研究員)</div></li>
+<li><a href="ros-navigation.html">ROS navigationパッケージを使ってみよう</a></li>
+<li><a href="lesson.html">演習課題</a></li>
 </ul>
-<h3>2日目 (6/26)</h3>
-<ul>
-<li>(10:00-12:00) <a href="ros-urg.html">ROSを用いたURGのデータ取得</a></li>
-<li>(12:00-13:00) 昼休み</li>
-<li>(13:00-13:30) <a href="ros-launch.html">ROSの便利機能</a></li>
-<li>(13:30-14:30) 講義2「ROSを用いた自律移動ロボットのシステム構築」 <div class="indent">講師: 原祥尭(千葉工大 fuRo 主任研究員)</div></li>
-<li>(14:30-16:00) <a href="ros-navigation.html">ROS navigationパッケージを使ってみよう</a></li>
-<li>(16:00-17:00) <a href="lesson.html">演習課題</a>と質疑</li>
-</ul>
-<p>スケジュールは、演習の進行に応じて多少変更する場合があります。</p>
 <h3>参考情報</h3>
 <ul>
+<li><a href="additional.html">補足資料</a></li>
 <li><a href="whats_next.html">What's next?</a></li>
 <li><a href="environment.html">Live USBと同等の環境構築方法</a></li>
-<li><a href="additional.html">補足資料</a></li>
 <li><a href="lesson_examples.html">演習課題の回答例</a></li>
+</ul>
+<ul>
+<li><a href="index_seminar.html">RSJロボット工学セミナー99実施時のトップページ</a></li>
 </ul>
 </article>
 </section>
