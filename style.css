@@ -156,6 +156,9 @@ p.diff-new{
 .rightinfo{
 	text-align: right;
 }
+.floatright{
+  float: right;
+}
 .cite{
  vertical-align: text-top;
  font-size: 75%;
@@ -305,9 +308,15 @@ a.link {
 }
 hr { color: #999999; padding: 0; height: 1px; }
 
-.footer{
+footer{
  margin-top: 150px;
  margin-bottom: 20px;
+ font-size: 90%;
+}
+footer:after{
+	content: "";
+	clear: both;
+	display: block;
 }
 
 .button{
