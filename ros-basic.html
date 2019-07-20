@@ -105,49 +105,49 @@ $ git clone https://github.com/at-wat/rsj_robot_test.git<div class="enter"></div
 <pre>#include &lt;ros/ros.h&gt;
 </pre>
 </div>
-<p>続いて、rsj_robot_test_nodeクラスを定義します。ROSプログラミングの際には、基本的にノードの持つ機能を、クラスとして定義し、これを呼び出す形式を取ることが標準的です。(クラスを使用せずに書く事も可能ですが、気をつけなければならない点が多くなるため、本セミナーではクラスでの書き方のみを解説します。)</p>
+<p>続いて、RSJRobotTestNodeクラスを定義します。ROSプログラミングの際には、基本的にノードの持つ機能を、クラスとして定義し、これを呼び出す形式を取ることが標準的です。(クラスを使用せずに書く事も可能ですが、気をつけなければならない点が多くなるため、本セミナーではクラスでの書き方のみを解説します。)</p>
 <div class="source_code">
 <pre>
-class rsj_robot_test_node
+class RSJRobotTestNode
 {
 <span class="comment">(略)</span>
 public:
 <span class="comment">(略)</span>
-	void mainloop()
-	{
-		ROS_INFO("Hello ROS World!");
+  void mainloop()
+  {
+    ROS_INFO("Hello ROS World!");
 
-		ros::Rate rate(10.0);
-		while(ros::ok())
-		{
-			ros::spinOnce();
-			// ここに速度指令の出力コード
-			rate.sleep();
-		}
-	}
+    ros::Rate rate(10.0);
+    while (ros::ok())
+    {
+      ros::spinOnce();
+      // ここに速度指令の出力コード
+      rate.sleep();
+    }
+  }
 };</pre>
 </div>
-<p>rsj_robot_test_nodeクラスのメンバ関数であるmainloop関数の中では、ROSで情報を画面などに出力する際に用いる、ROS_INFO関数を呼び出して、"Hello ROS World!"と表示しています。ほかにも、ROS_DEBUG、ROS_WARN、ROS_ERROR、ROS_FATAL関数が用意されています。</p>
+<p>RSJRobotTestNodeクラスのメンバ関数であるmainloop関数の中では、ROSで情報を画面などに出力する際に用いる、ROS_INFO関数を呼び出して、"Hello ROS World!"と表示しています。ほかにも、ROS_DEBUG、ROS_WARN、ROS_ERROR、ROS_FATAL関数が用意されています。</p>
 <p>ros::Rate rate(10.0)で、周期実行のためのクラスを初期化しています。初期化時の引数で実行周波数(この例では10Hz)を指定します。
 </p>
-<p>while(ros::ok())で、メインの無限ループを回します。ros::ok()をwhileの条件にすることで、ノードの終了指示が与えられたとき(Ctrl+Cが押された場合も含む)には、ループを抜けて終了処理などが行えるようになっています。</p>
+<p>while (ros::ok())で、メインの無限ループを回します。ros::ok()をwhileの条件にすることで、ノードの終了指示が与えられたとき(Ctrl+Cが押された場合も含む)には、ループを抜けて終了処理などが行えるようになっています。</p>
 <p>ループ中では、まず、<span class="important">ros::spinOnce()を呼び出して、ROSのメッセージを受け取る</span>といった処理を行います。spinOnceは、その時点で届いているメッセージの受け取り処理を済ませた後、すぐに処理を返します。rate.sleep()は、先ほど初期化した実行周波数を維持するようにsleepします。</p>
 <p>なお、ここでは、クラスを定義しただけなので、中身が呼び出されることはありません。後ほど実体化されたときに、初めて中身が実行されます。</p>
 
 <p>続いて、C++のmain関数が定義されています。ノードの実行時には、ここから処理がスタートします。</p>
 <div class="source_code">
 <pre>
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-	ros::init(argc, argv, "rsj_robot_test_node");
-	
-	rsj_robot_test_node robot_test;
-	
-	robot_test.mainloop();
+  ros::init(argc, argv, "rsj_robot_test_node");
+
+  RSJRobotTestNode robot_test;
+
+  robot_test.mainloop();
 }</pre>
 </div>
 <p>はじめに、ros::init関数を呼び出して、ROSノードの初期化を行います。1、2番目の引数には、main関数の引数をそのまま渡し、3番目の引数には、このノードの名前(この例では"rsj_robot_test_node")を与えます。</p>
-<p>次に、rsj_robot_test_nodeクラスの実体を作成します。ここでは、robot_testと名前をつけています。</p>
+<p>次に、RSJRobotTestNodeクラスの実体を作成します。ここでは、robot_testと名前をつけています。</p>
 <p>最後に、実体化したrobot_testのメンバ関数、mainloopを呼び出します。mainloop関数の中は無限ループになっているため、終了するまでの間、ros::spinOnce()、rate.sleep()が呼び出され続けます。</p>
 
 </pre>
@@ -182,18 +182,19 @@ $ catkin_make<div class="enter"></div></pre>
 <h3>ロボットに速度指令を与えるコードを追加</h3>
 <p>まず、ロボットに速度指令(目標並進速度・角速度)を与えるコードを追加します。ひな形には既に、速度指令値が入ったメッセージを出力するための初期化コードが含まれていますので、この部分の意味を確認します。</p>
 <div class="source_code">
-<pre>rsj_robot_test_node():
+<pre>RSJRobotTestNode():
 {
-	ros::NodeHandle nh("~");
-	pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
-			"/ypspur_ros/cmd_vel", 5);
-	sub_odom = nh.subscribe("/ypspur_ros/odom", 5,
-			&amp;rsj_robot_test_node::cb_odom, this);
+  ros::NodeHandle nh();
+  pub_twist_ = nh.advertise&lt;geometry_msgs::Twist&gt;(
+      "cmd_vel", 5);
+  sub_odom_ = nh.subscribe(
+      "odom", 5,
+      &amp;RSJRobotTestNode::cbOdom, this);
 }</pre>
 </div>
-<p>ソースコード中の、rsj_robot_test_nodeクラスの、rsj_robot_test_node関数は、クラスのコンストラクタと呼ばれるもので、<span class="important">クラスが初期化されるときに自動的に呼び出されます</span>。この中で、<div class="source_code"><pre>nh.advertise&lt;geometry_msgs::Twist&gt;("/ypspur_ros/cmd_vel", 5);</pre></div>の部分で、<span class="important">このノードが、これからメッセージを出力する</span>ことを宣言しています。advertise関数に与えている引数は以下のような意味を持ちます。
+<p>ソースコード中の、RSJRobotTestNodeクラスの、RSJRobotTestNode関数は、クラスのコンストラクタと呼ばれるもので、<span class="important">クラスが初期化されるときに自動的に呼び出されます</span>。この中で、<div class="source_code"><pre>nh.advertise&lt;geometry_msgs::Twist&gt;("cmd_vel", 5);</pre></div>の部分で、<span class="important">このノードが、これからメッセージを出力する</span>ことを宣言しています。advertise関数に与えている引数は以下のような意味を持ちます。
 <dl>
-<dt>"/ypspur_ros/cmd_vel"</dt><dd>出力するメッセージを置く場所(トピックと呼ぶ)を指定</dd>
+<dt>"cmd_vel"</dt><dd>出力するメッセージを置く場所(トピックと呼ぶ)を指定</dd>
 <dt>5</dt><dd>メッセージのバッファリング量を指定 (大きくすると、処理が一時的に重くなったときなどに受け取り側の読み飛ばしを減らせる)</dd>
 </dl>
 <p>advertise関数についている、&lt;geometry_msgs::Twist&gt;の部分は、メッセージの型を指定しています。これは、幾何的・運動学的な値を扱うメッセージを定義しているgeometry_msgsパッケージの、並進・回転速度を表すTwist型です。(この指定方法は、C++のテンプレートという機能を利用していますが、ここでは、「advertiseのときはメッセージの型指定を&lt;&gt;の中に書く、とだけ覚えておけば問題ありません。)</p>
@@ -202,15 +203,8 @@ $ catkin_make<div class="enter"></div></pre>
 <pre>geometry_msgs::Twist cmd_vel;
 cmd_vel.linear.x = 0.05;
 cmd_vel.angular.z = 0.0;
-pub_twist.publish(cmd_vel);</pre>
+pub_twist_.publish(cmd_vel);</pre>
 </div>
-<!--p>また、このままでは、rsj_robot_test_nodeが終了したとき、最後の速度指令そのまま残って、走り続けてしまいます。以下のコードを、mainloop関数中のwhileループ後(「ここに終了処理のコード」の部分)に追加しましょう。</p>
-<div class="source_code">
-<pre>geometry_msgs::Twist cmd_vel_stop;
-pub_twist.publish(cmd_vel_stop);
-ros::Duration(0.5).sleep();</pre>
-</div>
-<p>geometry_msgs::Twistの各要素は0で初期化されているため、そのままpublishすることで、走行を停止できます。</p-->
 
 <h3>ビルド＆実行</h3>
 <div class="source_code">
@@ -223,7 +217,7 @@ $ catkin_make<div class="enter"></div></pre>
 <pre>$ roscore<div class="enter"></div></pre>
 </div>
 <div class="source_code">
-<pre>$ rosrun ypspur_ros ypspur_ros _param_file:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
+<pre>$ rosrun ypspur_ros ypspur_ros _compatible:=1 _param_file:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
 </div>
 <p>続いて、別の端末でrsj_robot_test_nodeノードを実行します。まずは、ロボットのホイールを浮かせて、走り出さない状態にして実行してみましょう。</p>
 <div class="source_code">
@@ -248,35 +242,36 @@ Hello ROS World!
 <h3>ロボットの状態を表示するコードを追加</h3>
 <p>まず、ロボットの動作したときの移動量やオドメトリ座標を取得、表示するコードを追加します。ひな形には既に、移動量や座標が入ったメッセージを受け取るコードが含まれていますので、この部分の意味を確認します。</p>
 <div class="source_code">
-<pre>rsj_robot_test_node():
+<pre>RSJRobotTestNode():
 {
-	ros::NodeHandle nh("~");
-	pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
-			"/ypspur_ros/cmd_vel", 5);
-	sub_odom = nh.subscribe("/ypspur_ros/odom", 5,
-			&amp;rsj_robot_test_node::cb_odom, this);
+  ros::NodeHandle nh();
+  pub_twist_ = nh.advertise&lt;geometry_msgs::Twist&gt;(
+      "cmd_vel", 5);
+  sub_odom_ = nh.subscribe(
+      "odom", 5,
+      &amp;RSJRobotTestNode::cbOdom, this);
 }</pre>
 </div>
 <p>この中で、
-<div class="source_code"><pre>nh.subscribe("/ypspur_ros/odom", 5, 
-	&amp;rsj_robot_test_node::cb_odom, this);</pre></div>の部分で、<span class="important">このノードが、これからメッセージを受け取る</span>ことを宣言しています。subscribe関数に与えている引数は以下のような意味を持ちます。
+<div class="source_code"><pre>nh.subscribe("odom", 5, 
+  &amp;RSJRobotTestNode::cbOdom, this);</pre></div>の部分で、<span class="important">このノードが、これからメッセージを受け取る</span>ことを宣言しています。subscribe関数に与えている引数は以下のような意味を持ちます。
 <dl>
-<dt>"/ypspur_ros/odom"</dt><dd>受け取るメッセージが置かれている場所(トピック)を指定</dd>
+<dt>"odom"</dt><dd>受け取るメッセージが置かれている場所(トピック)を指定</dd>
 <dt>5</dt><dd>メッセージのバッファリング量を指定 (大きくすると、処理が一時的に重くなったときなどに読み飛ばしを減らせる)</dd>
-<dt>&amp;rsj_robot_test_node::cb_odom</dt><dd>メッセージを受け取ったときに呼び出す関数を指定 (rsj_robot_test_nodeクラスの中にある、cb_odom関数)</dd>
+<dt>&amp;RSJRobotTestNode::cbOdom</dt><dd>メッセージを受け取ったときに呼び出す関数を指定 (RSJRobotTestNodeクラスの中にある、cbOdom関数)</dd>
 <dt>this</dt><dd>メッセージを受け取ったときに呼び出す関数がクラスの中にある場合にクラスの実体を指定 (とりあえず、おまじないと思って構いません。)</dd>
 </dl>
-<p>これにより、rsj_robot_test_nodeノードは、/odomトピックからメッセージをうけとると、cb_odom関数が呼び出されるようになります。続いてcb_odom関数の中身を確認しましょう。</p>
+<p>これにより、rsj_robot_test_nodeノードは、/odomトピックからメッセージをうけとると、cbOdom関数が呼び出されるようになります。続いてcbOdom関数の中身を確認しましょう。</p>
 <div class="source_code">
-<pre>void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
+<pre>void cbOdom(const nav_msgs::Odometry::ConstPtr &amp;msg)
 {
 }</pre>
 </div>
 <p>const nav_msgs::Odometry::ConstPtr は、const型(内容を書き換えられない)、nav_msgsパッケージに含まれる、Odometry型のメッセージの、const型ポインタを表しています。&amp;msgの&amp;は、参照型(内容を書き換えられるように変数を渡すことができる)という意味ですが、(const型なので)ここでは特に気にする必要はありません。</p>
-<p>cb_odom関数に、以下のコードを追加してみましょう。これにより、受け取ったメッセージの中から、ロボットの並進速度を取り出して表示できます。</p>
+<p>cbOdom関数に、以下のコードを追加してみましょう。これにより、受け取ったメッセージの中から、ロボットの並進速度を取り出して表示できます。</p>
 <div class="source_code">
 <pre>ROS_INFO("vel %f", 
-	msg-&gt;twist.twist.linear.x);</pre>
+  msg-&gt;twist.twist.linear.x);</pre>
 </div>
 <p>ここで、msg-&gt;twist.twist.linear.x の意味を確認します。nav_msgs::Odometryメッセージには、下記のように入れ子状にメッセージが入っています。</p>
 <ul>
@@ -288,59 +283,59 @@ Hello ROS World!
 <p>全て展開すると、以下の構成になります。</p>
 <ul>
 <li>std_msgs/Header header
-	<ul>
-	<li>uint32 seq</li>
-	<li>time stamp</li>
-	<li>string frame_id</li>
-	</ul>
+  <ul>
+  <li>uint32 seq</li>
+  <li>time stamp</li>
+  <li>string frame_id</li>
+  </ul>
 </li>
 <li>string child_frame_id</li>
 <li>geometry_msgs/PoseWithCovariance pose
-	<ul>
-	<li>geometry_msgs/Pose pose
-		<ul>
-		<li>geometry_msgs/Point position
-			<ul>
-			<li>float64 x</li>
-			<li>float64 y</li>
-			<li>float64 z</li>
-			</ul>
-		</li>
-		<li>geometry_msgs/Quaternion orientation
-			<ul>
-			<li>float64 x</li>
-			<li>float64 y</li>
-			<li>float64 z</li>
-			<li>float64 w</li>
-			</ul>
-		</li>
-		</ul>
-	</li>
-	<li>float64[36] covariance</li>
-	</ul>
+  <ul>
+  <li>geometry_msgs/Pose pose
+    <ul>
+    <li>geometry_msgs/Point position
+      <ul>
+      <li>float64 x</li>
+      <li>float64 y</li>
+      <li>float64 z</li>
+      </ul>
+    </li>
+    <li>geometry_msgs/Quaternion orientation
+      <ul>
+      <li>float64 x</li>
+      <li>float64 y</li>
+      <li>float64 z</li>
+      <li>float64 w</li>
+      </ul>
+    </li>
+    </ul>
+  </li>
+  <li>float64[36] covariance</li>
+  </ul>
 </li>
 <li>geometry_msgs/TwistWithCovariance twist
-	<ul>
-	<li>geometry_msgs/Twist twist
-		<ul>
-		<li>geometry_msgs/Vector3 linear
-			<ul>
-			<li>float64 x <span class="important">ロボット並進速度</span></li>
-			<li>float64 y</li>
-			<li>float64 z</li>
-			</ul>
-		</li>
-		<li>geometry_msgs/Vector3 angular
-			<ul>
-			<li>float64 x</li>
-			<li>float64 y</li>
-			<li>float64 z <span class="important">ロボット角速度</span></li>
-			</ul>
-		</li>
-		</ul>
-	</li>
-	<li>float64[36] covariance</li>
-	</ul>
+  <ul>
+  <li>geometry_msgs/Twist twist
+    <ul>
+    <li>geometry_msgs/Vector3 linear
+      <ul>
+      <li>float64 x <span class="important">ロボット並進速度</span></li>
+      <li>float64 y</li>
+      <li>float64 z</li>
+      </ul>
+    </li>
+    <li>geometry_msgs/Vector3 angular
+      <ul>
+      <li>float64 x</li>
+      <li>float64 y</li>
+      <li>float64 z <span class="important">ロボット角速度</span></li>
+      </ul>
+    </li>
+    </ul>
+  </li>
+  <li>float64[36] covariance</li>
+  </ul>
 </li>
 </ul>
 <p>読みたいデータである、ロボット並進速度を取り出すためには、これを順にたどっていけば良く、<span class="important">msg-&gt;twist.twist.linear.x</span>、となります。msgはクラスへのポインタなので「-&gt;」を用い、以降はクラスのメンバ変数へのアクセスなので「.」を用いてアクセスしています。</p>
@@ -356,7 +351,7 @@ $ catkin_make<div class="enter"></div></pre>
 <pre>$ roscore<div class="enter"></div></pre>
 </div>
 <div class="source_code">
-<pre>$ rosrun ypspur_ros ypspur_ros _param_file:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
+<pre>$ rosrun ypspur_ros ypspur_ros _compatible:=1 _param_file:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
 </div>
 <p>続いて、rsj_robot_test_nodeノードを実行します。</p>
 <div class="source_code">
@@ -386,25 +381,25 @@ vel: 0.0500
 <pre>
 void mainloop()
 {
-	ROS_INFO("Hello ROS World!");
+  ROS_INFO("Hello ROS World!");
 
-	ros::Rate rate(10.0);
-	ros::Time start = ros::Time::now();
-	while(ros::ok())
-	{
-		ros::spinOnce();
-		ros::Time now = ros::Time::now();
+  ros::Rate rate(10.0);
+  ros::Time start = ros::Time::now();
+  while (ros::ok())
+  {
+    ros::spinOnce();
+    ros::Time now = ros::Time::now();
 
-		geometry_msgs::Twist cmd_vel;
-		if(now - start &gt; ros::Duration(3.0))
-		{
-			cmd_vel.linear.x = 0.05;
-			cmd_vel.angular.z = 0.0;
-		}
-		pub_twist.publish(cmd_vel);
+    geometry_msgs::Twist cmd_vel;
+    if (now - start &gt; ros::Duration(3.0))
+    {
+      cmd_vel.linear.x = 0.05;
+      cmd_vel.angular.z = 0.0;
+    }
+    pub_twist_.publish(cmd_vel);
 
-		rate.sleep();
-	}
+    rate.sleep();
+  }
 }
 </pre>
 </div>
@@ -412,29 +407,29 @@ void mainloop()
 <p>先ほどと同様にビルドし、ypspur_rosとrsj_robot_test_nodeを起動して動作を確認します。</p>
 
 <h3>センシング結果で動作を変える</h3>
-<p>cb_odomで取得したオドメトリのデータを保存しておくように、以下のように変更してみましょう。(<span class="added">赤線部分</span>を追加)</p>
+<p>cbOdomで取得したオドメトリのデータを保存しておくように、以下のように変更してみましょう。(<span class="added">赤線部分</span>を追加)</p>
 <div class="source_code">
-<pre>void cb_odom(const nav_msgs::Odometry::ConstPtr &amp;msg)
+<pre>void cbOdom(const nav_msgs::Odometry::ConstPtr &amp;msg)
 {
-	ROS_INFO("vel %f", 
-		msg-&gt;twist.twist.linear.x);
-	<span class="added">odom = *msg;</span>
+  ROS_INFO("vel %f", 
+    msg-&gt;twist.twist.linear.x);
+  <span class="added">odom_ = *msg;</span>
 }</pre>
 </div>
-<p>また、class rsj_robot_test_nodeの先頭に下記の変数定義を追加します。</p>
+<p>また、class RSJRobotTestNodeの先頭に下記の変数定義を追加します。</p>
 <div class="source_code">
-<pre>class rsj_robot_test_node
+<pre>class RSJRobotTestNode
 {
 private:
-	<span class="added">nav_msgs::Odometry odom;</span>
+  <span class="added">nav_msgs::Odometry odom_;</span>
 </pre>
 </div>
-<p>また、odomの中で方位を表す、クオータニオンをコンストラクタ(rsj_robot_test_node()関数)の最後で初期化しておきます。</p>
+<p>また、odom_の中で方位を表す、クオータニオンをコンストラクタ(RSJRobotTestNode()関数)の最後で初期化しておきます。</p>
 <div class="source_code">
-<pre>rsj_robot_test_node():
+<pre>RSJRobotTestNode():
 {
-	<span class="comment">(略)</span>
-	<span class="added">odom.pose.pose.orientation.w = 1.0;</span>
+  <span class="comment">(略)</span>
+  <span class="added">odom_.pose.pose.orientation.w = 1.0;</span>
 }
 </pre>
 </div>
@@ -444,28 +439,28 @@ private:
 <pre>
 void mainloop()
 {
-	ROS_INFO("Hello ROS World!");
+  ROS_INFO("Hello ROS World!");
 
-	ros::Rate rate(10.0);
-	while(ros::ok())
-	{
-		ros::spinOnce();
+  ros::Rate rate(10.0);
+  while (ros::ok())
+  {
+    ros::spinOnce();
 
-		geometry_msgs::Twist cmd_vel;
-		if(tf::getYaw(odom.pose.pose.orientation) &gt; 1.57)
-		{
-			cmd_vel.linear.x = 0.0;
-			cmd_vel.angular.z = 0.0;
-		}
-		else
-		{
-			cmd_vel.linear.x = 0.0;
-			cmd_vel.angular.z = 0.1;
-		}
-		pub_twist.publish(cmd_vel);
+    geometry_msgs::Twist cmd_vel;
+    if (tf::getYaw(odom_.pose.pose.orientation) &gt; 1.57)
+    {
+      cmd_vel.linear.x = 0.0;
+      cmd_vel.angular.z = 0.0;
+    }
+    else
+    {
+      cmd_vel.linear.x = 0.0;
+      cmd_vel.angular.z = 0.1;
+    }
+    pub_twist_.publish(cmd_vel);
 
-		rate.sleep();
-	}
+    rate.sleep();
+  }
 }
 </pre>
 </div>

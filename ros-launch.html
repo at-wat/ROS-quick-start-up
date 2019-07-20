@@ -34,15 +34,15 @@
 <li>下記内容を記入
 <div class="source_code">
 <pre>&lt;launch&gt;
-	&lt;node pkg="ypspur_ros" type="ypspur_ros" name="ypspur_ros"&gt;
-		&lt;param name="port" value="/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00" /&gt;
-		&lt;param name="param_file" value="/home/$(env USER)/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span>" /&gt;
-	&lt;/node&gt;
-	&lt;node pkg="urg_node" type="urg_node" name="urg_node"&gt;
-		&lt;param name="serial_port" value="/dev/serial/by-id/usb-Hokuyo_Data_Flex_for_USB_URG-Series_USB_Driver-if00" /&gt;
-	&lt;/node&gt;
-	&lt;node pkg="rsj_robot_test" type="rsj_robot_test_node" name="robot_test" <span class="added">output="screen"</span>&gt;
-	&lt;/node&gt;
+  &lt;node pkg="ypspur_ros" type="ypspur_ros" name="ypspur_ros"&gt;
+    &lt;param name="port" value="/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00" /&gt;
+    &lt;param name="param_file" value="/home/$(env USER)/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span>" /&gt;
+  &lt;/node&gt;
+  &lt;node pkg="urg_node" type="urg_node" name="urg_node"&gt;
+    &lt;param name="serial_port" value="/dev/serial/by-id/usb-Hokuyo_Data_Flex_for_USB_URG-Series_USB_Driver-if00" /&gt;
+  &lt;/node&gt;
+  &lt;node pkg="rsj_robot_test" type="rsj_robot_test_node" name="robot_test" <span class="added">output="screen"</span>&gt;
+  &lt;/node&gt;
 &lt;/launch&gt;</pre>
 </div>
 </li>
@@ -105,12 +105,12 @@
 <ul>
 <li>メッセージをsubscribeする
 <div class="source_code">
-<pre>$ rostopic echo /ypspur_ros/odom<div class="enter"></div></pre>
+<pre>$ rostopic echo odom<div class="enter"></div></pre>
 </div>
 </li>
 <li>メッセージをpublishする
 <div class="source_code">
-<pre>$ rostopic pub /ypspur_ros/cmd_vel geometry_msgs/Twist <span class="keybox">Tab補完で表示</span>"linear
+<pre>$ rostopic pub cmd_vel geometry_msgs/Twist <span class="keybox">Tab補完で表示</span>"linear
   x: 0.0
   y: 0.0
   z: 0.0
