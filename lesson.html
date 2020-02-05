@@ -65,16 +65,16 @@ goal_pose.pose.orientation = tf::createQuaternionMsgFromYaw(3.14/*[rad]*/);</pre
 #include &lt;tf/transform_listener.h&gt;
 
 // rsj_robot_test_nodeクラスのprivate:の後に
-tf::TransformListener tf_listener;
+tf::TransformListener tf_listener_;
 
 // 座標x, y, yawを取得したい場所で
 double x, y, yaw;
 try
 {
 	tf::StampedTransform trans;
-	tf_listener.waitForTransform("map", "base_link", 
+	tf_listener_.waitForTransform("map", "base_link", 
 			ros::Time(0), ros::Duration(0.5));
-	tf_listener.lookupTransform("map", "base_link", 
+	tf_listener_.lookupTransform("map", "base_link", 
 			ros::Time(0), trans);
 	x = trans.getOrigin().x();
 	y = trans.getOrigin().y();

@@ -39,49 +39,50 @@
 <span class="added">#include &lt;sensor_msgs/LaserScan.h&gt;</span></pre>
 </div>
 
-<p>rsj_robot_test_nodeで、sub_odom(サブスクライバクラス)を定義しているところに、URG用のサブスクライバクラスを追加します。</p>
+<p>rsj_robot_test_nodeで、sub_odom_(サブスクライバクラス)を定義しているところに、URG用のサブスクライバクラスを追加します。</p>
 
 <div class="source_code">
-<pre>class rsj_robot_test_node
+<pre>class RSJRobotTestNode
 {
 private:
-	<span class="comment">(略)</span>
-	ros::Subscriber sub_odom;
-	<span class="added">ros::Subscriber sub_scan;</span></pre>
+  <span class="comment">(略)</span>
+  ros::Subscriber sub_odom_;
+  <span class="added">ros::Subscriber sub_scan_;</span></pre>
 </div>
 
-<p>rsj_robot_test_nodeのコンストラクタに、URG用のサブスクライバ初期化コードを追加します。</p>
+<p>RSJRobotTestNodeのコンストラクタに、URG用のサブスクライバ初期化コードを追加します。</p>
 
 <div class="source_code">
-<pre>rsj_robot_test_node()
+<pre>RSJRobotTestNode()
 {
-	ros::NodeHandle nh("~");
-	pub_twist = nh.advertise&lt;geometry_msgs::Twist&gt;(
-			"/ypspur_ros/cmd_vel", 5);
-	sub_odom = nh.subscribe("/ypspur_ros/odom", 5, 
-			&amp;rsj_robot_test_node::cb_odom, this);
-	<span class="added">sub_scan = nh.subscribe("/scan", 5, </span>
-			<span class="added">&amp;rsj_robot_test_node::cb_scan, this);</span>
+  ros::NodeHandle nh();
+  pub_twist_ = nh.advertise&lt;geometry_msgs::Twist&gt;(
+      "cmd_vel", 5);
+  sub_odom_ = nh.subscribe(
+      "odom", 5, 
+      &amp;RSJRobotTestNode::cbOdom, this);
+  <span class="added">sub_scan_ = nh.subscribe("scan", 5, </span>
+      <span class="added">&amp;RSJRobotTestNode::cbScan, this);</span>
 </pre>
 </div>
 
-<p>更に、rsj_robot_test_nodeクラスに、URG用のコールバック関数を追加します。(cb_odomの後の位置など)</p>
+<p>更に、RSJRobotTestNodeクラスに、URG用のコールバック関数を追加します。(cbOdomの後の位置など)</p>
 
 <div class="source_code">
-<pre>void cb_scan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
+<pre>void cbScan(const sensor_msgs::LaserScan::ConstPtr &amp;msg)
 {
-	int i = msg->ranges.size() / 2;
-	if(msg->ranges[i] &lt; msg-&gt;range_min || // エラー値の場合
-		msg->ranges[i] &gt; msg-&gt;range_max || // 測定範囲外の場合
-		std::isnan(msg->ranges[i])) // 無限遠の場合
-	{
-		ROS_INFO("front-range: measurement error");
-	}
-	else
-	{
-		ROS_INFO("front-range: %0.3f",
-			msg->ranges[msg->ranges.size() / 2]);
-	}
+  int i = msg->ranges.size() / 2;
+  if (msg->ranges[i] &lt; msg-&gt;range_min || // エラー値の場合
+      msg->ranges[i] &gt; msg-&gt;range_max || // 測定範囲外の場合
+      std::isnan(msg->ranges[i])) // 無限遠の場合
+  {
+    ROS_INFO("front-range: measurement error");
+  }
+  else
+  {
+    ROS_INFO("front-range: %0.3f",
+      msg->ranges[msg->ranges.size() / 2]);
+  }
 }</pre>
 </div>
 <p>このコールバック関数中では、距離データ配列のうち、配列の中央の距離を表示しています。すなわち、URGの場合、正面方向の距離データ(m単位)が表示されます。また、msg-&gt;rangesの値がmsg-&gt;range_minより小さい場合は、測定エラー(遠すぎて測定できない、など)を意味しています。なお、msg-&gt;ranges[0]はmsg-&gt;angle_min方向(rad単位)、msg-&gt;ranges[msg-&gt;size()-1]はmsg-&gt;angle_max方向(rad単位)を表します。</p>
@@ -97,7 +98,7 @@ private:
 <pre>$ roscore<div class="enter"></div></pre>
 </div>
 <div class="source_code">
-<pre>$ rosrun ypspur_ros ypspur_ros _param_file:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
+<pre>$ rosrun ypspur_ros ypspur_ros _compatible:=1 _param_file:=/home/ubuntu/params/rsj-seminar20??.param<span class="important">該当するものに置き換えること</span> _port:=/dev/serial/by-id/usb-T-frog_project_T-frog_Driver-if00<div class="enter"></div></pre>
 </div>
 <div class="source_code">
 <pre>$ rosrun urg_node urg_node _serial_port:=/dev/serial/by-id/usb-Hokuyo_Data_Flex_for_USB_URG-Series_USB_Driver-if00<div class="enter"></div></pre>
